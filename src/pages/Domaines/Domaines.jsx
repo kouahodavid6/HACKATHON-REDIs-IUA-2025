@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 
-import TitreH1PPages from "../components/TitresH1PPages";
+import HeaderSection from "../components/HeaderSection";
+
 
 const Domaines = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50/20 flex flex-col md:flex-row">
@@ -51,9 +54,12 @@ const Domaines = () => {
             />
 
             <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto bg-transparent space-y-6">
-                <TitreH1PPages 
-                    titre="Domaines"
-                    description="Gestion des domaines de compétition"
+                <HeaderSection
+                    title="Domaines"
+                    subtitle="Gestion des domaines de compétition"
+                    buttonLabel="Ajouter un domaine"
+                    icon={Plus}
+                    onButtonClick={() => setIsModalOpen(true)}
                 />
             </main>
         </div>

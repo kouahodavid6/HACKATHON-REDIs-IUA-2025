@@ -55,8 +55,8 @@ const Etudiants = () => {
 
             <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto bg-transparent space-y-6">
                 <TitreH1PPages 
-                    titre="Étudiants"
-                    description="Gestion de tous les étudiants inscrits"
+                    title="Étudiants"
+                    subtitle="Gestion de tous les étudiants inscrits"
                 />
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

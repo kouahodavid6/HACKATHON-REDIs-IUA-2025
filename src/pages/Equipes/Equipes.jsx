@@ -53,8 +53,8 @@ const Equipes = () => {
 
             <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto bg-transparent space-y-6">
                 <TitreH1PPages 
-                    titre="Équipes"
-                    description="Gestion des équipes formées"
+                    title="Équipes"
+                    subtitle="Gestion des équipes formées"
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
