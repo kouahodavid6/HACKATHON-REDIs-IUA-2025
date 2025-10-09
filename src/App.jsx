@@ -12,7 +12,6 @@ import Epreuves from './pages/Epreuves/Epreuves';
 import Questions from './pages/Questions/Questions';
 import Propositions from './pages/Propositions/Propositions';
 import Programme from './pages/Programme/Programme';
-import SousProgrammes from './pages/Sous-Programmes/SousProgrammes';
 import Annonces from './pages/Annonces/Annonces';
 import NotFound from './components/NotFound';
 
@@ -152,14 +151,6 @@ function App() {
               element={
                 // <ProtectedRoute>
                   <Programme />
-                // </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/sous-programmes" 
-              element={
-                // <ProtectedRoute>
-                  <SousProgrammes />
                 // </ProtectedRoute>
               } 
             />

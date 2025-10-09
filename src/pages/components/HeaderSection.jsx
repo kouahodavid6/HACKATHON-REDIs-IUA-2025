@@ -19,10 +19,20 @@ const HeaderSection = ({
             {onButtonClick && (
                 <button
                     onClick={onButtonClick}
-                    className={`flex items-center gap-2 px-4 py-2 ${buttonColor} text-white rounded-lg transition-colors`}
+                    className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 ${buttonColor} 
+                    text-white rounded-lg transition-colors shadow-sm active:scale-95 w-fit self-end sm:self-auto`}
+                    aria-label={buttonLabel}
                 >
-                    {Icon && <Icon size={20} />}
-                    {buttonLabel}
+                    {/* Sur mobile : icône seule */}
+                    <span className="sm:hidden">
+                        {Icon && <Icon size={22} />}
+                    </span>
+
+                    {/* Sur desktop : icône + texte */}
+                    <span className="hidden sm:flex items-center gap-2">
+                        {Icon && <Icon size={20} />}
+                        <span>{buttonLabel}</span>
+                    </span>
                 </button>
             )}
         </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 
@@ -61,6 +61,40 @@ const Domaines = () => {
                     icon={Plus}
                     onButtonClick={() => setIsModalOpen(true)}
                 />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* {domains.map((domain) => ( */}
+                        <div
+                            // key={domain.id}
+                            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                        >
+                            <div className="flex items-start justify-between mb-3">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {/* {domain.libelle} */}
+                                    L1 Développement
+                                </h3>
+                                <div className="flex gap-2">
+                                <button
+                                    // onClick={() => handleEdit(domain)}
+                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                >
+                                    <Edit size={18} />
+                                </button>
+                                <button
+                                    // onClick={() => handleDelete(domain.id)}
+                                    className="text-red-600 hover:text-red-800 transition-colors"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                                </div>
+                            </div>
+                            <p className="text-gray-600 text-sm">
+                                {/* {domain.description || 'Aucune description'} */}
+                                Licence 1 - Développement web et ou mobile
+                            </p>
+                        </div>
+                    {/* ))} */}
+                </div>
             </main>
         </div>
     </div>

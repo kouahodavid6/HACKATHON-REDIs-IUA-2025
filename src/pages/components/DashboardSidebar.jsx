@@ -46,7 +46,6 @@ const DashboardSidebar = () => {
         { path: '/questions', name: 'Questions', icon: <HelpCircle className="h-5 w-5" /> },
         { path: '/propositions', name: 'Propositions', icon: <ListChecks className="h-5 w-5" /> },
         { path: '/programme', name: 'Programme', icon: <Calendar className="h-5 w-5" /> },
-        { path: '/sous-programmes', name: 'Sous-Programmes', icon: <CalendarDays className="h-5 w-5" /> },
         { path: '/annonces', name: 'Annonces', icon: <Bell className="h-5 w-5" /> },
     ];
 
