@@ -117,19 +117,6 @@ const LoginAdmin = () => {
                     </div>
                 </form>
 
-                {/* Indicateur de sécurité */}
-                <div className="mt-6 p-4 bg-slate-900/50 rounded-lg border border-slate-700/30">
-                    <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Sécurité:</span>
-                        <div className="flex items-center space-x-1">
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span className="text-green-400 font-medium">HTTPS</span>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Footer */}
                 <div className="text-center mt-8 pt-6 border-t border-slate-700/30">
                     <p className="text-slate-500 text-xs">
