@@ -1,60 +1,85 @@
-// import { create } from "zustand";
-// import { authService } from "../services/auth.service";
+import { create } from "zustand";
+import { authAdminService } from "../services/auth.service";
 
-// // Récupérer l'admin depuis localStorage si existe
-// const getInitialAdmin = () => {
-//     try {
-//         const user = localStorage.getItem("user");
-//         const token = localStorage.getItem("admin_token");
-        
-//         if (user && token) {
-//             return JSON.parse(user);
-//         }
-//         return null;
-//     } catch {
-//         return null;
-//     }
-// };
+const initialUser = localStorage.getItem("admin_user")
+    ? JSON.parse(localStorage.getItem("admin_user"))
+    : null;
 
-// const useAuthStore = create((set) => ({
-//     admin: getInitialAdmin(),
-//     loading: false,
-//     error: null,
-//     showError: false,
+const initialToken = localStorage.getItem("admin_token") || null;
 
-//     setError: (error) => set({ error, showError: true }),
-//     clearError: () => set({ error: null, showError: false }),
+const useAuthAdminStore = create((set) => ({
+    user: initialUser,
+    token: initialToken,
+    loading: false,
+    error: null,
+    showError: false,
 
-//     login: async (credentials) => {
-//         set({ loading: true, error: null, showError: false });
+    // Gestion erreurs
+    setError: (error) => set({ error, showError: true }),
+    clearError: () => set({ error: null, showError: false }),
 
-//         try {
-//             const response = await authService.loginAdmin(credentials);
-//             const { data, token } = response.data;
-//             const adminData = { ...data, token };
+  // Sauvegarde utilisateur + token
+    setAuth: (userData, token) => {
+        localStorage.setItem("admin_user", JSON.stringify(userData));
+        localStorage.setItem("admin_token", token);
+        set({ user: userData, token });
+    },
 
-//             // Stocker dans localStorage
-//             localStorage.setItem("user", JSON.stringify(adminData));
+    // Vérifie la présence du token
+    isAuthenticated: () => !!localStorage.getItem("admin_token"),
+
+  // Initialise les données depuis le localStorage
+    initializeAuth: () => {
+        const user = localStorage.getItem("admin_user");
+        const token = localStorage.getItem("admin_token");
+        if (user && token) {
+            set({ user: JSON.parse(user), token });
+        }
+    },
+
+    // Inscription
+    registerAdmin: async (data) => {
+        set({ loading: true });
+        try {
+            const response = await authAdminService.registerAdmin(data);
+            const userData = { id: response.id, email: response.email };
+            const token = response.token; // Assurez-vous que l'API retourne un token
             
-//             set({ admin: adminData, loading: false, error: null });
+            localStorage.setItem("admin_user", JSON.stringify(userData));
+            localStorage.setItem("admin_token", token);
+            set({ user: userData, token, loading: false });
+            return response;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+            set({ error: errorMessage, showError: true, loading: false });
+            throw error;
+        }
+    },
 
-//             return response.data;
-//         }
-//         catch(error) {
-//             const errorMessage = error.response?.data?.message || "Erreur de connexion";
-//             set({ error: errorMessage, showError: true, loading: false });
-//             throw new Error(errorMessage);
-//         }
-//     },
+    // Connexion
+    loginAdmin: async (credentials) => {
+        set({ loading: true });
+        try {
+            const response = await authAdminService.loginAdmin(credentials);
+            const userData = { id: response.id, email: response.email };
+            const token = response.token;
+            localStorage.setItem("admin_user", JSON.stringify(userData));
+            localStorage.setItem("admin_token", token);
+            set({ user: userData, token, loading: false });
+            return response;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+            set({ error: errorMessage, showError: true, loading: false });
+            throw error;
+        }
+    },
 
-//     logout: () => {
-//         authService.logout();
-//         set({ admin: null, error: null, showError: false });
-//     },
+    // Déconnexion
+    logout: () => {
+        localStorage.removeItem("admin_user");
+        localStorage.removeItem("admin_token");
+        set({ user: null, token: null });
+    },
+}));
 
-//     isAuthenticated: () => {
-//         return !!localStorage.getItem("admin_token");
-//     }
-// }));
-
-// export default useAuthStore;
+export default useAuthAdminStore;

@@ -1,48 +1,46 @@
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import { CheckCircle, XCircle } from "lucide-react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 
-// import Login from './pages/Auth/Login';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Etudiants from './pages/Etudiants/Etudiants';
-import Equipes from './pages/Equipes/Equipes';
-import Domaines from './pages/Domaines/Domaines';
-import Epreuves from './pages/Epreuves/Epreuves';
-import Questions from './pages/Questions/Questions';
-import Propositions from './pages/Propositions/Propositions';
-import Programme from './pages/Programme/Programme';
-import Annonces from './pages/Annonces/Annonces';
-import NotFound from './components/NotFound';
+import LoginAdmin from "./pages/Auth/LoginAdmin";
+import RegisterAdmin from "./pages/Auth/RegisterAdmin";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Etudiants from "./pages/Etudiants/Etudiants";
+import Equipes from "./pages/Equipes/Equipes";
+import Domaines from "./pages/Domaines/Domaines";
+import Epreuves from "./pages/Epreuves/Epreuves";
+import Questions from "./pages/Questions/Questions";
+import Propositions from "./pages/Propositions/Propositions";
+import Programme from "./pages/Programme/Programme";
+import Annonces from "./pages/Annonces/Annonces";
+import NotFound from "./components/NotFound";
 
-// import useAuthStore from './stores/auth.store';
+import useAuthAdminStore from "./stores/auth.store";
 
+// 🔒 Route protégée
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = useAuthAdminStore((state) => state.isAuthenticated());
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
 
-// Composant pour protéger les routes
-// const ProtectedRoute = ({ children }) => {
-//   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-
-//   return isAuthenticated ? children : <Navigate to="/login" replace />;
-// };
-
-// Composant pour les routes publiques (comme login)
-// const PublicRoute = ({ children }) => {
-//   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-  
-//   return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
-// };
+// 🔓 Route publique (login/register)
+const PublicRoute = ({ children }) => {
+  const isAuthenticated = useAuthAdminStore((state) => state.isAuthenticated());
+  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+};
 
 function App() {
-  // const initializeAuth = useAuthStore((state) => state.initializeAuth);
+  const initializeAuth = useAuthAdminStore((state) => state.initializeAuth);
 
-  // useEffect(() => {
-  //   initializeAuth;
-  // }, [initializeAuth]);
+  useEffect(() => {
+    initializeAuth(); // ✅ Exécution correcte
+  }, [initializeAuth]);
 
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        {/* Notifications toast */}
+        {/* ✅ Notifications toast */}
         <Toaster
           position="top-right"
           toastOptions={{
@@ -76,91 +74,108 @@ function App() {
 
         <main>
           <Routes>
-            {/* Route publique - Login */}
-            {/* <Route 
-              path="/login" 
+            {/* Routes publiques */}
+            <Route
+              path="/login"
               element={
                 <PublicRoute>
-                  <Login />
+                  <LoginAdmin />
                 </PublicRoute>
-              } 
-            /> */}
+              }
+            />
 
-            {/* Redirection par défaut vers login */}
-            {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <RegisterAdmin />
+                </PublicRoute>
+              }
+            />
+
+            {/* Redirection par défaut */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
 
             {/* Routes protégées */}
-            <Route 
-              path="/dashboard" 
+            <Route
+              path="/dashboard"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Dashboard />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/etudiants" 
+
+            <Route
+              path="/etudiants"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Etudiants />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/equipes" 
+
+            <Route
+              path="/equipes"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Equipes />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/domaines" 
+
+            <Route
+              path="/domaines"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Domaines />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/epreuves" 
+
+            <Route
+              path="/epreuves"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Epreuves />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/questions" 
+
+            <Route
+              path="/questions"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Questions />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/propositions" 
+
+            <Route
+              path="/propositions"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Propositions />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/programme" 
+
+            <Route
+              path="/programme"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Programme />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
-            <Route 
-              path="/annonces" 
+
+            <Route
+              path="/annonces"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <Annonces />
-                // </ProtectedRoute>
-              } 
+                </ProtectedRoute>
+              }
             />
 
             <Route path="*" element={<NotFound />} />

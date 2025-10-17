@@ -26,7 +26,7 @@ const DashboardSidebar = () => {
 
     const handleConfirmLogout = async () => {
         try {
-                localStorage.removeItem('token');
+                localStorage.removeItem('admin_token');
                 navigate('/login');
                 toast.success('Déconnexion effectuée avec succès !');
         } catch (error) {

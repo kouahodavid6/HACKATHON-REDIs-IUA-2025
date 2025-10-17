@@ -1,21 +1,16 @@
-// import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
-// const loginAdmin = async (credentials) => {
-//     const response = await axiosInstance.post("/api/admin/login", credentials);
+const registerAdmin = async (data) => {
+    const response = await axiosInstance.post("/api/registerAdmin", data);
+    return response.data;
+}
 
-//     if (response.data.token) {
-//         localStorage.setItem("admin_token", response.data.token);
-//     }
+const loginAdmin = async (credentials) => {
+    const response = await axiosInstance.post("/api/loginAdmin", credentials);
+    return response.data;
+}
 
-//     return response;
-// }
-
-// const logout = () => {
-//     localStorage.removeItem("admin_token");
-//     localStorage.removeItem("user");
-// }
-
-// export const authService = {
-//     loginAdmin,
-//     logout
-// }
+export const authAdminService = {
+    registerAdmin,
+    loginAdmin
+}
