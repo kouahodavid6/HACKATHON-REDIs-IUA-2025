@@ -3,7 +3,6 @@ import { useState } from "react";
 import Input from "../../components/Input"
 import { useNavigate } from "react-router-dom";
 import useAuthAdminStore from "../../stores/auth.store";
-
 import LogoBrandingREDIs from "./components/LogoBrandingREDIs";
 
 const RegisterAdmin = () => {
@@ -40,7 +39,8 @@ const RegisterAdmin = () => {
             {/* Logo et branding REDIs */}
             <LogoBrandingREDIs />
 
-            <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
+            {/* Conteneur principal avec marge supérieure */}
+            <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10 mt-20 lg:mt-0">
                 {/* En-tête avec badge */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 mb-4">
