@@ -70,7 +70,7 @@ const RegisterAdmin = () => {
                             value={form.email}
                             onChange={handleChange}
                             required
-                            className="bg-slate-900/50 border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
+                            className="border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
                         />
                     </div>
 
@@ -88,7 +88,7 @@ const RegisterAdmin = () => {
                             value={form.password}
                             onChange={handleChange}
                             required
-                            className="bg-slate-900/50 border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
+                            className="border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
                         />
                     </div>
 
