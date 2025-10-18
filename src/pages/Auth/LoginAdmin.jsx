@@ -1,10 +1,10 @@
-// 📁 src/pages/LoginAdmin.jsx
 import { useState } from "react";
-import toast from "react-hot-toast";
-import Input from "../../components/Input"
 import { useNavigate } from "react-router-dom";
-import useAuthAdminStore from "../../stores/auth.store";
+import toast from "react-hot-toast";
+
+import Input from "../../components/Input";
 import LogoBrandingREDIs from "./components/LogoBrandingREDIs";
+import useAuthAdminStore from "../../stores/auth.store";
 
 const LoginAdmin = () => {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -12,19 +12,27 @@ const LoginAdmin = () => {
     const navigate = useNavigate();
     const { loginAdmin } = useAuthAdminStore();
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!form.email || !form.password) {
+            toast.error("Veuillez remplir tous les champs");
+            return;
+        }
+
         setLoading(true);
         
         try {
             await loginAdmin(form);
             toast.success("Connexion réussie !");
             navigate("/dashboard");
-        } catch {
-            // ✅ Supprimé la variable 'error' non utilisée
-            toast.error("Erreur de connexion. Vérifiez vos identifiants.");
+        } catch (error) {
+            toast.error(error.message || "Erreur de connexion");
         } finally {
             setLoading(false);
         }
@@ -38,12 +46,9 @@ const LoginAdmin = () => {
             <div className="absolute bottom-20 left-16 w-3 h-3 bg-blue-400 rounded-full animate-pulse delay-500"></div>
             <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-cyan-400 rounded-full animate-pulse delay-1000"></div>
             
-            {/* Logo et branding REDIs */}
             <LogoBrandingREDIs />
 
-            {/* Conteneur principal avec marge supérieure */}
             <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10 mt-20 lg:mt-0">
-                {/* En-tête avec badge de sécurité */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 mb-4">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
@@ -121,7 +126,6 @@ const LoginAdmin = () => {
                     </div>
                 </form>
 
-                {/* Footer */}
                 <div className="text-center mt-8 pt-6 border-t border-slate-700/30">
                     <p className="text-slate-500 text-xs">
                         Système d'administration REDIs Hackathon<br />

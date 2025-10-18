@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
     },
 });
 
-// ➕ Intercepteur : ajout automatique du token
+// Intercepteur pour ajouter le token automatiquement
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("admin_token");
@@ -21,12 +21,13 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// ➕ Intercepteur : gestion erreurs 401
+// Intercepteur pour gérer les erreurs 401
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem("admin_token");
+            localStorage.removeItem("admin_user");
             window.location.href = "/login";
         }
         return Promise.reject(error);

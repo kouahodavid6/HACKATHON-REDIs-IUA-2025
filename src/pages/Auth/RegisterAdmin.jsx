@@ -1,32 +1,55 @@
-// 📁 src/pages/RegisterAdmin.jsx
 import { useState } from "react";
-import toast from "react-hot-toast";
-import Input from "../../components/Input"
 import { useNavigate } from "react-router-dom";
-import useAuthAdminStore from "../../stores/auth.store";
+import toast from "react-hot-toast";
+
+import Input from "../../components/Input";
 import LogoBrandingREDIs from "./components/LogoBrandingREDIs";
+import useAuthAdminStore from "../../stores/auth.store";
 
 const RegisterAdmin = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { registerAdmin } = useAuthAdminStore();
+    const { registerAdmin, error, clearError } = useAuthAdminStore();
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+        if (error) clearError();
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!form.email || !form.password) {
+            toast.error("Veuillez remplir tous les champs");
+            return;
+        }
+
         setLoading(true);
         
         try {
             await registerAdmin(form);
             toast.success("Compte créé avec succès !");
             navigate("/dashboard");
-        } catch {
-            // ✅ Supprimé la variable 'error' non utilisée
-            toast.error("Erreur lors de la création du compte.");
+        } catch (error) {
+            if (error.message.includes("existe déjà")) {
+                toast.error(
+                    <div>
+                        {error.message}
+                        <br />
+                        <button 
+                            onClick={() => navigate("/login")}
+                            className="text-blue-400 underline mt-1"
+                        >
+                            Se connecter
+                        </button>
+                    </div>,
+                    { duration: 7000 }
+                );
+            } else {
+                toast.error(error.message);
+            }
         } finally {
             setLoading(false);
         }
@@ -40,12 +63,9 @@ const RegisterAdmin = () => {
             <div className="absolute bottom-32 right-16 w-3 h-3 bg-purple-400 rounded-full animate-pulse delay-300"></div>
             <div className="absolute top-40 right-20 w-2 h-2 bg-cyan-400 rounded-full animate-pulse delay-700"></div>
             
-            {/* Logo et branding REDIs */}
             <LogoBrandingREDIs />
 
-            {/* Conteneur principal avec marge supérieure */}
             <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10 mt-20 lg:mt-0">
-                {/* En-tête avec badge */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 mb-4">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
@@ -92,6 +112,7 @@ const RegisterAdmin = () => {
                             value={form.password}
                             onChange={handleChange}
                             required
+                            minLength={6}
                             className="border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
                         />
                     </div>
@@ -124,7 +145,6 @@ const RegisterAdmin = () => {
                     </div>
                 </form>
 
-                {/* Footer */}
                 <div className="text-center mt-8 pt-6 border-t border-slate-700/30">
                     <p className="text-slate-500 text-xs">
                         © 2024 REDIs - Département Informatique<br />
