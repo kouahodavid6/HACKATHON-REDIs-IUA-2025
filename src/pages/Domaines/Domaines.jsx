@@ -7,11 +7,16 @@ import ResponsiveSidebar from "../components/ResponsiveSidebar";
 import HeaderSection from "../components/HeaderSection";
 import useDomaineStore from "../../stores/domaines.store";
 import ModalDomaine from "./components/ModalDomaine";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import toast from "react-hot-toast";
 
 const Domaines = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [domaineToDelete, setDomaineToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const { 
         domaines = [],
@@ -55,16 +60,34 @@ const Domaines = () => {
         clearSuccess();
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce domaine ?")) {
-            try {
-                await supprimerDomaine(id);
-                // Recharger la liste
-                await listerDomaines();
-            } catch (error) {
-                console.error("Erreur lors de la suppression:", error);
-            }
+    const handleDeleteClick = (domaine) => {
+        console.log('Opening delete modal for:', domaine);
+        setDomaineToDelete(domaine);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!domaineToDelete) return;
+        
+        setIsDeleting(true);
+        try {
+            await supprimerDomaine(domaineToDelete.id);
+            // Recharger la liste
+            await listerDomaines();
+            setDeleteModalOpen(false);
+            setDomaineToDelete(null);
+            toast.success("Domaine supprimer avec succès !");
+        } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+        } finally {
+            setIsDeleting(false);
         }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteModalOpen(false);
+        setDomaineToDelete(null);
+        setIsDeleting(false);
     };
 
     const handleCloseModal = () => {
@@ -153,7 +176,7 @@ const Domaines = () => {
                                                 <Edit size={18} />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(domaine.id)}
+                                                onClick={() => handleDeleteClick(domaine)}
                                                 className="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50"
                                                 title="Supprimer"
                                             >
@@ -191,13 +214,22 @@ const Domaines = () => {
                 </main>
             </div>
 
-            {/* Modal - TOUJOURS RENDU MAIS CONDITIONNEL */}
+            {/* Modal d'ajout/modification */}
             <ModalDomaine
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onSuccess={handleSuccess}
                 domaine={currentDomaine}
                 isEdit={isEditMode}
+            />
+
+            {/* Modal de confirmation de suppression */}
+            <DeleteConfirmModal
+                isOpen={deleteModalOpen}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                entityName={`le domaine "${domaineToDelete?.titre}"`}
+                isDeleting={isDeleting}
             />
         </div>
     );

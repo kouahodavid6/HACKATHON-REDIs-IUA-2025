@@ -2,11 +2,11 @@ import { create } from "zustand";
 import { domaineService } from "../services/domaines.service";
 
 const useDomaineStore = create((set) => ({
-    domaines: [], // ✅ Corriger : "domaines" au lieu de "domaine"
+    domaines: [],
     loading: false,
     error: null,
     success: false,
-    currentDomaine: null, // ✅ Ajouter cette propriété manquante
+    currentDomaine: null,
     nombreDomaines: 0,
 
     ajouterDomaine: async (titre) => {
@@ -14,10 +14,8 @@ const useDomaineStore = create((set) => ({
         
         try {
             const data = { titre };
-            // ✅ Utiliser le bon nom (Majuscule)
             const response = await domaineService.AjoutDomaine(data);
             
-            // Ajouter le nouveau domaine à la liste
             set(state => ({ 
                 domaines: [...state.domaines, response],
                 loading: false, 
@@ -36,15 +34,13 @@ const useDomaineStore = create((set) => ({
         }
     },
 
-    // ✅ Corriger le nom de la fonction (Majuscule)
     listerDomaines: async () => {
         set({ loading: true, error: null });
         
         try {
-            // ✅ Utiliser le bon nom (Majuscule)
             const response = await domaineService.ListerDomaines();
             set({ 
-                domaines: response.domaines || response || [], // S'adapter à la réponse de l'API
+                domaines: response.domaines || response || [],
                 loading: false 
             });
             return response;
@@ -61,11 +57,13 @@ const useDomaineStore = create((set) => ({
     modifierDomaine: async (id, titre) => {
         set({ loading: true, error: null, success: false });
         try {
-            // Vous devrez créer cette fonction dans domaineService
+            // ✅ Maintenant ça utilisera POST
             const response = await domaineService.ModifierDomaine(id, { titre });
+            
+            // Mettre à jour la liste localement
             set(state => ({
                 domaines: state.domaines.map(d => 
-                    d.id === id ? { ...d, ...response } : d
+                    d.id === id ? { ...d, titre: response.titre } : d
                 ),
                 loading: false,
                 success: true
@@ -78,12 +76,12 @@ const useDomaineStore = create((set) => ({
         }
     },
 
-    // ✅ Ajouter les fonctions manquantes utilisées dans le composant
     supprimerDomaine: async (id) => {
         set({ loading: true, error: null });
         try {
-            // Vous devrez créer cette fonction dans domaineService
+            // ✅ Maintenant ça utilisera POST
             await domaineService.SupprimerDomaine(id);
+            
             set(state => ({
                 domaines: state.domaines.filter(d => d.id !== id),
                 loading: false,
@@ -112,18 +110,8 @@ const useDomaineStore = create((set) => ({
     },
 
     setCurrentDomaine: (domaine) => set({ currentDomaine: domaine }),
-
-    // Réinitialiser les états
-    resetState: () => set({ 
-        loading: false, 
-        error: null, 
-        success: false 
-    }),
-
-    // Effacer les erreurs
+    resetState: () => set({ loading: false, error: null, success: false }),
     clearError: () => set({ error: null }),
-
-    // Effacer le succès
     clearSuccess: () => set({ success: false }),
 }));
 
