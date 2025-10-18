@@ -10,34 +10,21 @@ const LoginAdmin = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { loginAdmin, error, clearError } = useAuthAdminStore();
+    const { loginAdmin } = useAuthAdminStore();
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-        // Effacer l'erreur quand l'utilisateur tape
-        if (error) {
-            clearError();
-        }
-    };
+    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         
-        // Validation basique
-        if (!form.email || !form.password) {
-            toast.error("Veuillez remplir tous les champs");
-            setLoading(false);
-            return;
-        }
-
         try {
             await loginAdmin(form);
             toast.success("Connexion réussie !");
             navigate("/dashboard");
-        } catch (error) {
-            toast.error(error.message);
-            console.error("Erreur lors de la connexion:", error);
+        } catch {
+            // ✅ Supprimé la variable 'error' non utilisée
+            toast.error("Erreur de connexion. Vérifiez vos identifiants.");
         } finally {
             setLoading(false);
         }
