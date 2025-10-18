@@ -5,12 +5,13 @@ import ResponsiveSidebar from "../components/ResponsiveSidebar";
 import { Calendar } from "lucide-react";
 import { data } from "../../data/data";
 import { motion } from "framer-motion";
+import DashboardCards from "./components/DashboardCards";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Récupération des données depuis le fichier data.js
-  const { cards, modules } = data;
+  const { modules } = data;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/20 flex flex-col md:flex-row">
@@ -68,32 +69,7 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            {cards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <div
-                  key={card.title}
-                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">{card.title}</p>
-                      <p className="text-3xl font-bold text-gray-900 mt-2">{card.value}</p>
-                    </div>
-                    <div className={`${card.color} p-3 rounded-lg`}>
-                      <Icon className="text-white" size={24} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </motion.div>
+          <DashboardCards />
 
           <motion.div
             initial={{ opacity: 0 }}

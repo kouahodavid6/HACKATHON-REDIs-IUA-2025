@@ -10,13 +10,13 @@ import {
 }
 from "lucide-react";
 
-const cards = [
-    //Exemple de value: status.students,
-    { title: 'Étudiants', value: 100, icon: Users, color: 'bg-blue-500' },
-    { title: 'Équipes', value: 25, icon: ShieldHalf, color: 'bg-green-500' },
-    { title: 'Domaines', value: 4, icon: FolderTree, color: 'bg-yellow-500' },
-    { title: 'Épreuves', value: 8, icon: FileText, color: 'bg-red-500' },
-];
+// const cards = [
+//     //Exemple de value: status.students,
+//     { title: 'Étudiants', value: 100, icon: Users, color: 'bg-blue-500' },
+//     { title: 'Équipes', value: 25, icon: ShieldHalf, color: 'bg-green-500' },
+//     { title: 'Domaines', value: 4, icon: FolderTree, color: 'bg-yellow-500' },
+//     { title: 'Épreuves', value: 8, icon: FileText, color: 'bg-red-500' },
+// ];
 
 const modules = [
     { title: 'Questions', icon: HelpCircle, path: '/questions', color: 'bg-cyan-500' },
@@ -26,6 +26,6 @@ const modules = [
 ];
 
 export const data  = {
-    cards,
+    // cards,
     modules
 }
