@@ -1,5 +1,6 @@
 // 📁 src/pages/RegisterAdmin.jsx
 import { useState } from "react";
+import { toast } from "react-toastify";
 import Input from "../../components/Input"
 import { useNavigate } from "react-router-dom";
 import useAuthAdminStore from "../../stores/auth.store";
@@ -9,19 +10,50 @@ const RegisterAdmin = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { registerAdmin } = useAuthAdminStore();
+    const { registerAdmin, error, clearError } = useAuthAdminStore();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        // Effacer l'erreur quand l'utilisateur tape
+        if (error) {
+            clearError();
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        
+        // Validation basique
+        if (!form.email || !form.password) {
+            toast.error("Veuillez remplir tous les champs");
+            setLoading(false);
+            return;
+        }
+
         try {
             await registerAdmin(form);
+            toast.success("Compte créé avec succès !");
             navigate("/dashboard");
         } catch (error) {
+            // ✅ Afficher un toast d'erreur spécifique
+            if (error.message.includes("existe déjà")) {
+                toast.error(
+                    <div>
+                        {error.message}
+                        <br />
+                        <button 
+                            onClick={() => navigate("/login")}
+                            className="text-blue-400 underline mt-1"
+                        >
+                            Se connecter
+                        </button>
+                    </div>,
+                    { autoClose: 7000 }
+                );
+            } else {
+                toast.error(error.message);
+            }
             console.error("Erreur lors de l'inscription:", error);
         } finally {
             setLoading(false);
@@ -88,6 +120,7 @@ const RegisterAdmin = () => {
                             value={form.password}
                             onChange={handleChange}
                             required
+                            minLength={6}
                             className="border-slate-600 focus:border-blue-500 focus:ring-blue-500/20"
                         />
                     </div>
