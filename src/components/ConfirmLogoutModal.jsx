@@ -142,7 +142,7 @@ const ConfirmLogoutModal = ({ isOpen, onClose, onConfirm }) => {
                                         Êtes-vous sûr de vouloir vous déconnecter ?
                                     </p>
                                     <p className="text-blue-600/80 text-sm">
-                                        Vous devrez vous reconnecter pour accéder à nouveau à votre espace boutique.
+                                        Vous devrez vous reconnecter pour accéder à nouveau à votre espace.
                                     </p>
                                 </div>
                             </div>
