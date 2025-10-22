@@ -1,6 +1,6 @@
 import axiosInstance from "../api/axiosInstance";
 
-export const registerAdmin = async (data) => {
+const registerAdmin = async (data) => {
     try {
         console.log("📤 Envoi inscription:", data);
         const response = await axiosInstance.post("/api/registerAdmin", data);
@@ -12,7 +12,7 @@ export const registerAdmin = async (data) => {
     }
 };
 
-export const loginAdmin = async (credentials) => {
+const loginAdmin = async (credentials) => {
     try {
         console.log("📤 Envoi connexion:", { email: credentials.email, password: "***" });
         const response = await axiosInstance.post("/api/loginAdmin", credentials);

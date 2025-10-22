@@ -7,24 +7,61 @@ import {
     FileText,
 } from "lucide-react";
 import useDomaineStore from "../../../stores/domaines.store";
+import useEtudiantStore from "../../../stores/etudiants.store";
+import useEquipeStore from "../../../stores/equipes.store";
 
 const DashboardCards = () => {
-    const { nombreDomaines, getNombreDomaines, loading } = useDomaineStore();
+    const { nombreDomaines, getNombreDomaines, loading: loadingDomaines } = useDomaineStore();
+    const { etudiants, listerEtudiants, getStatistiques, loading: loadingEtudiants } = useEtudiantStore();
+    const { equipes, listerEquipes, getNombreEquipes, loading: loadingEquipes } = useEquipeStore();
 
+    // Charger les données au montage
     useEffect(() => {
-        getNombreDomaines();
-    }, [getNombreDomaines]);
+        const chargerDonnees = async () => {
+            try {
+                await Promise.all([
+                    getNombreDomaines(),
+                    listerEtudiants(),
+                    listerEquipes()
+                ]);
+            } catch (error) {
+                console.error("Erreur lors du chargement des données:", error);
+            }
+        };
+
+        chargerDonnees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // ✅ Désactivation ESLint pour cette ligne
+
+    const statsEtudiants = getStatistiques();
+    const nombreEquipes = getNombreEquipes();
+    const loading = loadingDomaines || loadingEtudiants || loadingEquipes;
 
     const cards = [
-        { title: "Étudiants", value: "", icon: Users, color: "bg-blue-500" },
-        { title: "Équipes", value: "", icon: ShieldHalf, color: "bg-green-500" },
+        { 
+            title: "Étudiants", 
+            value: loading ? "..." : statsEtudiants.total,
+            icon: Users, 
+            color: "bg-blue-500" 
+        },
+        { 
+            title: "Équipes", 
+            value: loading ? "..." : nombreEquipes,
+            icon: ShieldHalf, 
+            color: "bg-green-500" 
+        },
         {
             title: "Domaines",
-            value: loading ? "..." : nombreDomaines ?? "",
+            value: loading ? "..." : nombreDomaines,
             icon: FolderTree,
             color: "bg-yellow-500",
         },
-        { title: "Épreuves", value: "", icon: FileText, color: "bg-red-500" },
+        { 
+            title: "Épreuves", 
+            value: "0", 
+            icon: FileText, 
+            color: "bg-red-500" 
+        },
     ];
 
     return (
@@ -45,7 +82,7 @@ const DashboardCards = () => {
                     <div>
                         <p className="text-sm font-medium text-gray-600">{card.title}</p>
                         <p className="text-3xl font-bold text-gray-900 mt-2">
-                        {card.value}
+                            {card.value}
                         </p>
                     </div>
                     <div className={`${card.color} p-3 rounded-lg`}>

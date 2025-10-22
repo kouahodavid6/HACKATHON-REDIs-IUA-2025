@@ -16,8 +16,9 @@ const useDomaineStore = create((set) => ({
             const data = { titre };
             const response = await domaineService.AjoutDomaine(data);
             
+            // ✅ CORRECTION : Accéder via response.data
             set(state => ({ 
-                domaines: [...state.domaines, response],
+                domaines: [...state.domaines, response.data],
                 loading: false, 
                 success: true
             }));
@@ -39,8 +40,9 @@ const useDomaineStore = create((set) => ({
         
         try {
             const response = await domaineService.ListerDomaines();
+            // ✅ CORRECTION : Accéder via response.data
             set({ 
-                domaines: response.domaines || response || [],
+                domaines: response.data || [],
                 loading: false 
             });
             return response;
@@ -57,20 +59,19 @@ const useDomaineStore = create((set) => ({
     modifierDomaine: async (id, titre) => {
         set({ loading: true, error: null, success: false });
         try {
-            // ✅ Maintenant ça utilisera POST
             const response = await domaineService.ModifierDomaine(id, { titre });
             
-            // Mettre à jour la liste localement
+            // ✅ CORRECTION : Accéder via response.data
             set(state => ({
                 domaines: state.domaines.map(d => 
-                    d.id === id ? { ...d, titre: response.titre } : d
+                    d.id === id ? { ...d, titre: response.titre } : d //response.data.titre
                 ),
                 loading: false,
                 success: true
             }));
             return response;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.message || error.message; //response?.data?.message
             set({ error: errorMessage, loading: false, success: false });
             throw error;
         }
@@ -79,7 +80,6 @@ const useDomaineStore = create((set) => ({
     supprimerDomaine: async (id) => {
         set({ loading: true, error: null });
         try {
-            // ✅ Maintenant ça utilisera POST
             await domaineService.SupprimerDomaine(id);
             
             set(state => ({
@@ -99,7 +99,7 @@ const useDomaineStore = create((set) => ({
 
         try {
             const response = await domaineService.NombreDomaines();
-            const nombre = response.NbrDomaines || 0;
+            const nombre = response.data?.NbrDomaines || 0;
             set({ nombreDomaines: nombre, loading: false });
             return nombre;
         } catch (error) {
