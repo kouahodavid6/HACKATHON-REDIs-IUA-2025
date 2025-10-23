@@ -9,11 +9,13 @@ import {
 import useDomaineStore from "../../../stores/domaines.store";
 import useEtudiantStore from "../../../stores/etudiants.store";
 import useEquipeStore from "../../../stores/equipes.store";
+import useEpreuveStore from "../../../stores/epreuves.store";
 
 const DashboardCards = () => {
     const { nombreDomaines, getNombreDomaines, loading: loadingDomaines } = useDomaineStore();
-    const { etudiants, listerEtudiants, getStatistiques, loading: loadingEtudiants } = useEtudiantStore();
-    const { equipes, listerEquipes, getNombreEquipes, loading: loadingEquipes } = useEquipeStore();
+    const { listerEtudiants, getStatistiques, loading: loadingEtudiants } = useEtudiantStore();
+    const { listerEquipes, getNombreEquipes, loading: loadingEquipes } = useEquipeStore();
+    const { listerEpreuves, getNombreEpreuves, loading: loadingEpreuve } = useEpreuveStore();
 
     // Charger les données au montage
     useEffect(() => {
@@ -22,7 +24,8 @@ const DashboardCards = () => {
                 await Promise.all([
                     getNombreDomaines(),
                     listerEtudiants(),
-                    listerEquipes()
+                    listerEquipes(),
+                    listerEpreuves()
                 ]);
             } catch (error) {
                 console.error("Erreur lors du chargement des données:", error);
@@ -35,7 +38,8 @@ const DashboardCards = () => {
 
     const statsEtudiants = getStatistiques();
     const nombreEquipes = getNombreEquipes();
-    const loading = loadingDomaines || loadingEtudiants || loadingEquipes;
+    const nombreEpreuve = getNombreEpreuves();
+    const loading = loadingDomaines || loadingEtudiants || loadingEquipes || loadingEpreuve;
 
     const cards = [
         { 
@@ -58,7 +62,7 @@ const DashboardCards = () => {
         },
         { 
             title: "Épreuves", 
-            value: "0", 
+            value: loading ? "..." : nombreEpreuve, 
             icon: FileText, 
             color: "bg-red-500" 
         },
