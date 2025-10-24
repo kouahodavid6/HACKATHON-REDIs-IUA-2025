@@ -15,6 +15,7 @@ import Propositions from "./pages/Propositions/Propositions";
 import Programme from "./pages/Programme/Programme";
 import Annonces from "./pages/Annonces/Annonces";
 import Tabs from "./pages/Tabs/Tabs";
+import Blocs from "./pages/Blocs/Blocs";
 import NotFound from "./components/NotFound";
 
 import useAuthAdminStore from "./stores/auth.store";
@@ -184,6 +185,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Tabs />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/blocs/:idTab"
+              element={
+                <ProtectedRoute>
+                  <Blocs />
                 </ProtectedRoute>
               }
             />

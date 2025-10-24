@@ -5,70 +5,80 @@ import {
     Edit, 
     Trash2, 
     ArrowLeft, 
-    FolderOpen, 
-    Clock, 
-    Calendar,
-    Users,
+    FileText, 
+    Code,
     AlertCircle,
     Loader2,
     Grid3X3,
     List,
     Search,
     X,
-    FileText 
+    FolderOpen
 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import ResponsiveSidebar from "../components/ResponsiveSidebar";
-import HeaderSection from "../components/HeaderSection";
+import useBlocsStore from "../../stores/blocs.store";
 import useTabsStore from "../../stores/tabs.store";
-import useEpreuveStore from "../../stores/epreuves.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
-import TabsModal from "./components/TabsModal";
+import BlocsModal from "./components/BlocsModal";
 import toast from "react-hot-toast";
 
-const Tabs = () => {
-    const { idEpreuve } = useParams();
+const Blocs = () => {
+    const { idTab } = useParams();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [tabToDelete, setTabToDelete] = useState(null);
+    const [blocToDelete, setBlocToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
-    const [searchTerm, setSearchTerm] = useState(''); // Recherche par titre
+    const [viewMode, setViewMode] = useState('grid');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { 
-        tabs, 
+        blocs, 
         loading, 
         error,
-        listerTabs, 
-        supprimerTab,
-        setCurrentTab,
-        currentTab
-    } = useTabsStore();
+        listerBlocs, 
+        supprimerBloc,
+        setCurrentBloc,
+        clearCurrentBloc,
+        currentBloc
+    } = useBlocsStore();
 
-    const { epreuves } = useEpreuveStore();
+    const { tabs, listerTabs } = useTabsStore();
 
-    // Récupérer les détails de l'épreuve
-    const epreuve = epreuves.find(e => e.id === idEpreuve);
+    // Récupérer les détails du tab
+    const tab = tabs.find(t => t.id === idTab);
 
-    // Charger les tabs au montage
-    const chargerTabs = useCallback(async () => {
+    // Charger les blocs au montage
+    const chargerBlocs = useCallback(async () => {
         try {
-            await listerTabs(idEpreuve);
+            await listerBlocs(idTab);
         } catch (error) {
-            console.error("Erreur lors du chargement des tabs:", error);
-            toast.error("Erreur lors du chargement des tabs");
+            console.error("Erreur lors du chargement des blocs:", error);
+            toast.error("Erreur lors du chargement des blocs");
         }
-    }, [idEpreuve, listerTabs]);
+    }, [idTab, listerBlocs]);
+
+    // Charger les tabs si nécessaire
+    const chargerTabs = useCallback(async () => {
+        if (tabs.length === 0 && tab?.id_epreuve) {
+            try {
+                await listerTabs(tab.id_epreuve);
+            } catch (error) {
+                console.error("Erreur lors du chargement des tabs:", error);
+            }
+        }
+    }, [tabs.length, listerTabs, tab?.id_epreuve]);
 
     useEffect(() => {
-        if (idEpreuve) {
+        if (idTab) {
+            chargerBlocs();
             chargerTabs();
         }
-    }, [idEpreuve, chargerTabs]);
+    }, [idTab, chargerBlocs, chargerTabs]);
 
     // Navigation retour
     const handleBack = () => {
@@ -77,36 +87,38 @@ const Tabs = () => {
 
     // Gestion de l'ajout
     const handleAdd = () => {
-        setCurrentTab(null);
+        clearCurrentBloc();
         setIsEditMode(false);
         setIsModalOpen(true);
     };
 
     // Gestion de la modification
-    const handleEdit = (tab) => {
-        setCurrentTab(tab);
+    const handleEdit = (bloc) => {
+        setCurrentBloc(bloc);
         setIsEditMode(true);
         setIsModalOpen(true);
     };
 
     // Gestion de la suppression
-    const handleDeleteClick = (tab) => {
-        setTabToDelete(tab);
+    const handleDeleteClick = (bloc) => {
+        setBlocToDelete(bloc);
         setDeleteModalOpen(true);
     };
 
     const handleConfirmDelete = async () => {
-        if (!tabToDelete) return;
+        if (!blocToDelete) return;
         
         setIsDeleting(true);
         try {
-            await supprimerTab(tabToDelete.id);
+            await supprimerBloc(blocToDelete.id);
             setDeleteModalOpen(false);
-            setTabToDelete(null);
-            toast.success("Tab supprimé avec succès");
+            setBlocToDelete(null);
+            toast.success("Bloc supprimé avec succès");
+            // Recharger les blocs pour voir les changements immédiatement
+            await chargerBlocs();
         } catch (error) {
             console.error("Erreur lors de la suppression:", error);
-            toast.error("Erreur lors de la suppression du tab");
+            toast.error("Erreur lors de la suppression du bloc");
         } finally {
             setIsDeleting(false);
         }
@@ -114,49 +126,36 @@ const Tabs = () => {
 
     const handleCancelDelete = () => {
         setDeleteModalOpen(false);
-        setTabToDelete(null);
+        setBlocToDelete(null);
         setIsDeleting(false);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setCurrentTab(null);
+        clearCurrentBloc();
         setIsEditMode(false);
     };
 
     const handleSuccess = () => {
         handleCloseModal();
-        chargerTabs();
+        chargerBlocs();
     };
 
-    // Formatage de la durée
-    const formatDuree = (duree) => {
-        const heures = Math.floor(duree / 60);
-        const minutes = duree % 60;
-        
-        if (heures > 0) {
-            return `${heures}h${minutes > 0 ? `${minutes}min` : ''}`;
-        }
-        return `${minutes}min`;
-    };
-
-    // Formatage de la date
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-    };
-
-    // Filtrer les tabs selon la recherche
-    const filteredTabs = tabs.filter(tab =>
-        tab.titre.toLowerCase().includes(searchTerm.toLowerCase())
+    // Filtrer les blocs selon la recherche
+    const filteredBlocs = blocs.filter(bloc =>
+        bloc.libelle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (bloc.contenu && bloc.contenu.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     // Effacer la recherche
     const clearSearch = () => {
         setSearchTerm('');
+    };
+
+    // Tronquer le contenu pour l'affichage
+    const truncateContent = (content, length = 100) => {
+        if (!content) return 'Aucun contenu';
+        return content.length > length ? content.substring(0, length) + '...' : content;
     };
 
     return (
@@ -172,8 +171,8 @@ const Tabs = () => {
             {/* Contenu principal */}
             <div className="flex-1 min-w-0 flex flex-col">
                 <DashboardHeader
-                    title={`Gestion des Tabs`}
-                    subtitle={epreuve?.titre || 'Chargement...'}
+                    title={`Gestion des Blocs`}
+                    subtitle={tab?.titre || 'Chargement...'}
                     toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
                 />
 
@@ -186,7 +185,7 @@ const Tabs = () => {
                                 className="flex items-center gap-2 px-4 py-3 text-slate-600 hover:text-slate-800 hover:bg-white rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200 hover:shadow-sm"
                             >
                                 <ArrowLeft size={20} />
-                                <span className="font-medium">Retour aux épreuves</span>
+                                <span className="font-medium">Retour aux tabs</span>
                             </button>
                         </div>
 
@@ -220,52 +219,34 @@ const Tabs = () => {
                                 className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 font-medium"
                             >
                                 <Plus size={20} />
-                                <span>Nouveau Tab</span>
+                                <span>Nouveau Bloc</span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Carte d'information de l'épreuve */}
-                    {epreuve && (
+                    {/* Carte d'information du tab */}
+                    {tab && (
                         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                             <div className="p-6">
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                                     <div className="flex-1">
-                                        <h1 className="text-2xl font-bold text-slate-900 mb-2">
-                                            {epreuve.titre}
-                                        </h1>
-                                        <p className="text-slate-600 leading-relaxed">
-                                            {epreuve.description}
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="p-2 bg-blue-100 rounded-lg">
+                                                <FolderOpen className="text-blue-600" size={24} />
+                                            </div>
+                                            <h1 className="text-2xl font-bold text-slate-900">
+                                                {tab.titre}
+                                            </h1>
+                                        </div>
+                                        <p className="text-slate-600 text-sm">
+                                            Gestion des blocs de contenu pour ce tab
                                         </p>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
-                                        <div className="flex items-center gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                                            <Calendar className="text-blue-600 flex-shrink-0" size={20} />
-                                            <div>
-                                                <div className="text-sm text-slate-600">Début</div>
-                                                <div className="font-semibold text-slate-900">
-                                                    {formatDate(epreuve.date_start)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                                            <Calendar className="text-emerald-600 flex-shrink-0" size={20} />
-                                            <div>
-                                                <div className="text-sm text-slate-600">Fin</div>
-                                                <div className="font-semibold text-slate-900">
-                                                    {formatDate(epreuve.date_end)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-3 bg-purple-50/50 rounded-xl border border-purple-100">
-                                            <Clock className="text-purple-600 flex-shrink-0" size={20} />
-                                            <div>
-                                                <div className="text-sm text-slate-600">Durée</div>
-                                                <div className="font-semibold text-slate-900">
-                                                    {formatDuree(parseInt(epreuve.duree))}
-                                                </div>
-                                            </div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <div className="text-sm text-slate-600">Total blocs</div>
+                                            <div className="text-2xl font-bold text-slate-900">{blocs.length}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -279,11 +260,11 @@ const Tabs = () => {
                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-lg font-bold text-slate-900">{tabs.length}</div>
-                                    <div className="text-sm text-slate-600">Tabs total</div>
+                                    <div className="text-lg font-bold text-slate-900">{blocs.length}</div>
+                                    <div className="text-sm text-slate-600">Blocs total</div>
                                 </div>
                                 <div className="p-3 bg-blue-100 rounded-lg">
-                                    <FolderOpen className="text-blue-600" size={24} />
+                                    <FileText className="text-blue-600" size={24} />
                                 </div>
                             </div>
                         </div>
@@ -293,21 +274,21 @@ const Tabs = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-lg font-bold text-slate-900">
-                                        {epreuve?.domaine_name || 'N/A'}
+                                        {tab?.titre || 'N/A'}
                                     </div>
-                                    <div className="text-sm text-slate-600">Domaine</div>
+                                    <div className="text-sm text-slate-600">Tab parent</div>
                                 </div>
                                 <div className="p-3 bg-purple-100 rounded-lg">
-                                    <Users className="text-purple-600" size={24} />
+                                    <FolderOpen className="text-purple-600" size={24} />
                                 </div>
                             </div>
                         </div>
 
-                        {/* Barre de recherche - TROISIÈME ÉLÉMENT */}
+                        {/* Barre de recherche */}
                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
                             <div className="flex flex-col h-full justify-center">
                                 <label htmlFor="search" className="text-sm font-medium text-slate-700 mb-2">
-                                    Rechercher un tab
+                                    Rechercher un bloc
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -316,7 +297,7 @@ const Tabs = () => {
                                     <input
                                         type="text"
                                         id="search"
-                                        placeholder="Rechercher par nom..."
+                                        placeholder="Rechercher par nom ou contenu..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-400"
@@ -332,7 +313,7 @@ const Tabs = () => {
                                 </div>
                                 {searchTerm && (
                                     <div className="text-xs text-slate-500 mt-2">
-                                        {filteredTabs.length} tab(s) trouvé(s)
+                                        {filteredBlocs.length} bloc(s) trouvé(s)
                                     </div>
                                 )}
                             </div>
@@ -343,7 +324,7 @@ const Tabs = () => {
                     {loading && (
                         <div className="flex flex-col items-center justify-center py-16 bg-white/50 rounded-2xl border border-slate-200">
                             <Loader2 className="animate-spin text-blue-600 mb-4" size={32} />
-                            <div className="text-lg font-medium text-slate-700">Chargement des tabs...</div>
+                            <div className="text-lg font-medium text-slate-700">Chargement des blocs...</div>
                             <div className="text-sm text-slate-500 mt-2">Veuillez patienter</div>
                         </div>
                     )}
@@ -360,7 +341,7 @@ const Tabs = () => {
                                         {error}
                                     </p>
                                     <button
-                                        onClick={chargerTabs}
+                                        onClick={chargerBlocs}
                                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
                                     >
                                         Réessayer
@@ -370,20 +351,20 @@ const Tabs = () => {
                         </div>
                     )}
 
-                    {/* Liste des tabs */}
+                    {/* Liste des blocs */}
                     {!loading && !error && (
                         <div className="space-y-6">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <h2 className="text-xl font-semibold text-slate-900">
-                                    Tabs de l'épreuve
+                                    Blocs du tab
                                     {searchTerm && (
                                         <span className="text-sm font-normal text-slate-500 ml-2">
-                                            ({filteredTabs.length} résultat(s))
+                                            ({filteredBlocs.length} résultat(s))
                                         </span>
                                     )}
                                     {!searchTerm && (
                                         <span className="text-sm font-normal text-slate-500 ml-2">
-                                            ({tabs.length} total)
+                                            ({blocs.length} total)
                                         </span>
                                     )}
                                 </h2>
@@ -392,7 +373,7 @@ const Tabs = () => {
                                 {searchTerm && (
                                     <div className="sm:hidden flex items-center gap-2 text-sm text-slate-600 bg-blue-50 px-3 py-1 rounded-full">
                                         <Search size={14} />
-                                        <span>{filteredTabs.length} résultat(s)</span>
+                                        <span>{filteredBlocs.length} résultat(s)</span>
                                         <button
                                             onClick={clearSearch}
                                             className="text-slate-400 hover:text-slate-600"
@@ -403,15 +384,15 @@ const Tabs = () => {
                                 )}
                             </div>
 
-                            {filteredTabs.length > 0 ? (
+                            {filteredBlocs.length > 0 ? (
                                 <div className={
                                     viewMode === 'grid' 
                                         ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                                         : "space-y-4"
                                 }>
-                                    {filteredTabs.map((tab) => (
+                                    {filteredBlocs.map((bloc) => (
                                         <div
-                                            key={tab.id}
+                                            key={bloc.id}
                                             className={`bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-300 hover:border-slate-300 group ${
                                                 viewMode === 'list' 
                                                     ? 'flex items-center justify-between p-6' 
@@ -429,16 +410,38 @@ const Tabs = () => {
                                                         ? 'flex-1' 
                                                         : 'w-full'
                                                 }`}>
-                                                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/25 flex-shrink-0">
-                                                        <FolderOpen className="text-white" size={viewMode === 'list' ? 20 : 24} />
+                                                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/25 flex-shrink-0">
+                                                        <FileText className="text-white" size={viewMode === 'list' ? 20 : 24} />
                                                     </div>
-
-                                                    <h3 className={`font-semibold text-slate-900 group-hover:text-blue-600 transition-colors ${
-                                                        viewMode === 'list' ? 'text-lg' : 'text-xl mb-2'
-                                                    }`}>
-                                                        {tab.titre}
-                                                    </h3>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className={`font-semibold text-slate-900 group-hover:text-green-600 transition-colors ${
+                                                            viewMode === 'list' ? 'text-lg' : 'text-xl mb-2'
+                                                        }`}>
+                                                            {bloc.libelle}
+                                                        </h3>
+                                                        {viewMode === 'grid' && (
+                                                            <div className="text-sm text-slate-600 mt-2">
+                                                                <div className="flex items-start gap-2">
+                                                                    <Code size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+                                                                    <p className="text-slate-500 line-clamp-3">
+                                                                        {truncateContent(bloc.contenu)}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
+
+                                                {viewMode === 'list' && (
+                                                    <div className="text-sm text-slate-600">
+                                                        <div className="flex items-center gap-2">
+                                                            <Code size={14} className="text-slate-400" />
+                                                            <span className="max-w-xs truncate">
+                                                                {truncateContent(bloc.contenu, 50)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Actions */}
@@ -447,27 +450,17 @@ const Tabs = () => {
                                                     ? 'ml-4' 
                                                     : 'mt-4 pt-4 border-t border-slate-100 justify-end'
                                             }`}>
-                                                {/* Bouton Gérer les Blocs */}
                                                 <button
-                                                    onClick={() => navigate(`/blocs/${tab.id}`)}
-                                                    className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 font-medium flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap"
-                                                    title="Gérer les blocs de ce tab"
-                                                >
-                                                    <FileText size={14} className="sm:size-4" />
-                                                    <span className="hidden sm:inline">Blocs</span>
-                                                </button>
-
-                                                <button
-                                                    onClick={() => handleEdit(tab)}
+                                                    onClick={() => handleEdit(bloc)}
                                                     className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                                                    title="Modifier le tab"
+                                                    title="Modifier le bloc"
                                                 >
                                                     <Edit size={18} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeleteClick(tab)}
+                                                    onClick={() => handleDeleteClick(bloc)}
                                                     className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                                    title="Supprimer le tab"
+                                                    title="Supprimer le bloc"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -486,7 +479,7 @@ const Tabs = () => {
                                                 Aucun résultat trouvé
                                             </h3>
                                             <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                                                Aucun tab ne correspond à votre recherche "{searchTerm}".
+                                                Aucun bloc ne correspond à votre recherche "{searchTerm}".
                                             </p>
                                             <button
                                                 onClick={clearSearch}
@@ -499,20 +492,20 @@ const Tabs = () => {
                                     ) : (
                                         <>
                                             <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                                <FolderOpen className="text-slate-400" size={32} />
+                                                <FileText className="text-slate-400" size={32} />
                                             </div>
                                             <h3 className="text-xl font-semibold text-slate-600 mb-2">
-                                                Aucun tab créé
+                                                Aucun bloc créé
                                             </h3>
                                             <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                                                Commencez par créer votre premier tab pour organiser le contenu de cette épreuve.
+                                                Commencez par créer votre premier bloc pour ajouter du contenu à ce tab.
                                             </p>
                                             <button
                                                 onClick={handleAdd}
                                                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
                                             >
                                                 <Plus size={20} />
-                                                Créer le premier tab
+                                                Créer le premier bloc
                                             </button>
                                         </>
                                     )}
@@ -524,13 +517,13 @@ const Tabs = () => {
             </div>
 
             {/* Modal d'ajout/modification */}
-            <TabsModal
+            <BlocsModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onSuccess={handleSuccess}
-                tab={currentTab}
+                bloc={currentBloc}
                 isEdit={isEditMode}
-                idEpreuve={idEpreuve}
+                idTab={idTab}
             />
 
             {/* Modal de confirmation de suppression */}
@@ -538,11 +531,11 @@ const Tabs = () => {
                 isOpen={deleteModalOpen}
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
-                entityName={`le tab "${tabToDelete?.titre}"`}
+                entityName={`le bloc "${blocToDelete?.libelle}"`}
                 isDeleting={isDeleting}
             />
         </div>
     );
 };
 
-export default Tabs;
+export default Blocs;

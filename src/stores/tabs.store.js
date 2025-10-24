@@ -39,7 +39,7 @@ const useTabsStore = create((set) => ({
 
             // Lister les tabs d'une épreuve
             set({ 
-                tabs: response.data || [],
+                tabs: listTabs || [],
                 loading: false
             });
 
