@@ -32,18 +32,21 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         };
     }, [isOpen]);
 
-    // Charger les domaines au montage
+    // Charger les domaines au montage avec debug
     useEffect(() => {
         const chargerDomaines = async () => {
             try {
                 await listerDomaines();
+                console.log("DOMAINES CHARGÉS DANS MODAL:", domaines);
             } catch (error) {
                 console.error("Erreur lors du chargement des domaines:", error);
             }
         };
 
-        chargerDomaines();
-    }, [listerDomaines]);
+        if (isOpen) {
+            chargerDomaines();
+        }
+    }, [isOpen, listerDomaines]);
 
     // Fonction pour formater la date pour l'input datetime-local
     const formatDateForInput = useCallback((dateString) => {
@@ -179,17 +182,28 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         return true;
     };
 
-    // CORRECTION: Fonction pour mapper les IDs de domaine vers des entiers
-    const getDomaineIntegerId = (domaineId) => {
-        // Map des IDs de domaine vers des entiers
-        const domaineMap = {
-            "OgJxkyDRM4Az8ldJqdYm3BjNEnoa0K": 1, // L1 Développement
-            "m3nEyN6bdQ5VelRo9w2RL1YzoZvWOx": 2, // L1 Réseau
-            "mK2xOn7DR3zPBGjwlgL4VE18QjwdpY": 3, // L2 Développement
-            "bxMkN8Ep7KyPrq8Bl061mB2Xod45Je": 4, // L2 Réseau
-            "3bv6kNmZpK2zJ9zAlR7LeMjAOwdQWx": 5  // L3 Développement
-        };
-        return domaineMap[domaineId] || null;
+    // CORRECTION CRITIQUE: Fonction dynamique pour mapper les IDs de domaine
+    const getDomaineIntegerId = (domaineUuid) => {
+        if (!domaineUuid) return null;
+        
+        console.log("RECHERCHE DOMAINE AVEC UUID:", domaineUuid);
+        console.log("LISTE DES DOMAINES DISPONIBLES:", domaines);
+        
+        // Solution 1: Chercher par UUID et utiliser l'index + 1
+        const domaineIndex = domaines.findIndex(d => d.id === domaineUuid);
+        
+        if (domaineIndex === -1) {
+            console.error("Domaine non trouvé pour l'UUID:", domaineUuid);
+            toast.error("Domaine sélectionné non valide");
+            return null;
+        }
+        
+        // Utiliser l'index + 1 comme ID (car les IDs commencent à 1)
+        const integerId = domaineIndex + 1;
+        
+        console.log("Mapping réussi - UUID:", domaineUuid, "-> Index:", domaineIndex, "-> ID entier:", integerId);
+        
+        return integerId;
     };
 
     // Soumission du formulaire - CORRECTIONS FINALES
@@ -213,10 +227,10 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             formData.append('date_start', formatDateForAPI(form.date_start));
             formData.append('date_end', formatDateForAPI(form.date_end));
             
-            // CORRECTION CRITIQUE: Convertir l'ID string en entier via mapping
+            // CORRECTION CRITIQUE: Convertir l'ID string en entier via mapping dynamique
             const domaineIntegerId = getDomaineIntegerId(form.id_domaine);
             if (!domaineIntegerId) {
-                toast.error("ID de domaine invalide");
+                toast.error("ID de domaine invalide - veuillez ressélectionner le domaine");
                 setLoading(false);
                 return;
             }
@@ -230,8 +244,9 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             // L'image est obligatoire selon l'API
             if (form.url_image) {
                 formData.append('url_image', form.url_image);
-            } else {
-                toast.error("L'image est obligatoire");
+            } else if (!isEdit) {
+                // Pour la création, l'image est obligatoire
+                toast.error("L'image est obligatoire pour créer une épreuve");
                 setLoading(false);
                 return;
             }
@@ -241,8 +256,9 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             console.log("Mode:", isEdit ? "Édition" : "Création");
             console.log("ID Domaine string:", form.id_domaine);
             console.log("ID Domaine integer:", domaineIntegerId);
+            console.log("Domaines disponibles:", domaines);
             for (let [key, value] of formData.entries()) {
-                console.log(`${key}:`, value, `(type: ${typeof value})`);
+                console.log(`${key}:`, value);
             }
 
             let result;
@@ -458,7 +474,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                             className="hidden"
                                             id="image-upload"
                                             disabled={loading}
-                                            required
+                                            required={!isEdit} // L'image n'est requise que pour la création
                                         />
                                         <label
                                             htmlFor="image-upload"
@@ -469,7 +485,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                                 {form.url_image ? form.url_image.name : "Cliquez pour uploader une image"}
                                             </span>
                                             <span className="text-xs text-gray-500">
-                                                PNG, JPG, JPEG (max 2MB)
+                                                PNG, JPG, JPEG (max 2MB) {isEdit && "(optionnel pour la modification)"}
                                             </span>
                                         </label>
                                     </div>
@@ -503,9 +519,9 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                             disabled={loading}
                                         >
                                             <option value="">Sélectionnez un domaine</option>
-                                            {domaines.map((domaine) => (
+                                            {domaines.map((domaine, index) => (
                                                 <option key={domaine.id} value={domaine.id}>
-                                                    {domaine.titre}
+                                                    {domaine.titre} (ID: {index + 1})
                                                 </option>
                                             ))}
                                         </select>

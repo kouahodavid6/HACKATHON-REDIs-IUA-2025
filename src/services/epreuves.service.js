@@ -36,13 +36,39 @@ const ListerEpreuves = async () => {
     }
 }
 
+// CORRECTION: Ajout de la fonction manquante pour modifier une épreuve
+const ModifierEpreuve = async (id, formData) => {
+    try {
+        console.log("Modification de l'épreuve ID:", id);
+        
+        const response = await axiosInstance.post(`/api/UpdateEpreuve/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        
+        console.log("Réponse de modification:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la modification:", error);
+        console.error("Détails de l'erreur:", error.response?.data);
+        throw error;
+    }
+}
+
 const SupprimerEpreuve = async (id) => {
-    const response = await axiosInstance.post(`/api/DeleteEpreuve/${id}`);
-    return response.data;
+    try {
+        const response = await axiosInstance.post(`/api/DeleteEpreuve/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la suppression:", error);
+        throw error;
+    }
 }
 
 export const epreuveService = {
     AjouterEpreuve,
     ListerEpreuves,
+    ModifierEpreuve, // CORRECTION: Ajout de cette fonction
     SupprimerEpreuve
 }

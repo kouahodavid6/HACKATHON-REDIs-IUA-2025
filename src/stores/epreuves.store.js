@@ -15,15 +15,18 @@ const useEpreuveStore = create((set, get) => ({
         try {
             const response = await epreuveService.AjouterEpreuve(formData);
             
+            // CORRECTION: La réponse de l'API contient directement les données
+            const nouvelleEpreuve = response.data || response;
+            
             set(state => ({ 
-                epreuves: [...state.epreuves, response.data],
+                epreuves: [...state.epreuves, nouvelleEpreuve],
                 loading: false, 
                 success: true
             }));
             
             return response;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
                 error: errorMessage, 
                 loading: false, 
@@ -39,14 +42,17 @@ const useEpreuveStore = create((set, get) => ({
         try {
             const response = await epreuveService.ListerEpreuves();
             
+            // CORRECTION: La réponse de l'API contient directement le tableau
+            const epreuvesData = response.data || response || [];
+            
             set({ 
-                epreuves: response.data || [],
+                epreuves: epreuvesData,
                 loading: false 
             });
             
             return response;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
                 error: errorMessage, 
                 loading: false 
@@ -68,10 +74,40 @@ const useEpreuveStore = create((set, get) => ({
             }));
             
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
                 error: errorMessage, 
                 loading: false 
+            });
+            throw error;
+        }
+    },
+
+    // CORRECTION: Ajout de la fonction modifierEpreuve manquante
+    modifierEpreuve: async (id, formData) => {
+        set({ loading: true, error: null, success: false });
+        
+        try {
+            // NOTE: Vous devrez créer cette fonction dans epreuveService
+            const response = await epreuveService.ModifierEpreuve(id, formData);
+            
+            const epreuveModifiee = response.data || response;
+            
+            set(state => ({
+                epreuves: state.epreuves.map(epreuve => 
+                    epreuve.id === id ? { ...epreuve, ...epreuveModifiee } : epreuve
+                ),
+                loading: false,
+                success: true
+            }));
+            
+            return response;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
+            set({ 
+                error: errorMessage, 
+                loading: false, 
+                success: false 
             });
             throw error;
         }

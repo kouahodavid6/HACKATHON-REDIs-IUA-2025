@@ -16,16 +16,18 @@ const useDomaineStore = create((set) => ({
             const data = { titre };
             const response = await domaineService.AjoutDomaine(data);
             
-            // ✅ CORRECTION : Accéder via response.data
+            // CORRECTION: La réponse de l'API contient directement les données
+            const nouveauDomaine = response.data || response;
+            
             set(state => ({ 
-                domaines: [...state.domaines, response.data],
+                domaines: [...state.domaines, nouveauDomaine],
                 loading: false, 
                 success: true
             }));
             
             return response;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
                 error: errorMessage, 
                 loading: false, 
@@ -40,14 +42,17 @@ const useDomaineStore = create((set) => ({
         
         try {
             const response = await domaineService.ListerDomaines();
-            // ✅ CORRECTION : Accéder via response.data
+            
+            // CORRECTION: La réponse de l'API contient directement le tableau
+            const domainesData = response.data || response || [];
+            
             set({ 
-                domaines: response.data || [],
+                domaines: domainesData,
                 loading: false 
             });
             return response;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
                 error: errorMessage, 
                 loading: false 
@@ -61,17 +66,19 @@ const useDomaineStore = create((set) => ({
         try {
             const response = await domaineService.ModifierDomaine(id, { titre });
             
-            // ✅ CORRECTION : Accéder via response.data
+            // CORRECTION: La réponse contient les données mises à jour
+            const domaineModifie = response.data || response;
+            
             set(state => ({
                 domaines: state.domaines.map(d => 
-                    d.id === id ? { ...d, titre: response.titre } : d //response.data.titre
+                    d.id === id ? { ...d, ...domaineModifie } : d
                 ),
                 loading: false,
                 success: true
             }));
             return response;
         } catch (error) {
-            const errorMessage = error.response?.message || error.message; //response?.data?.message
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ error: errorMessage, loading: false, success: false });
             throw error;
         }
@@ -88,7 +95,7 @@ const useDomaineStore = create((set) => ({
                 success: true
             }));
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ error: errorMessage, loading: false });
             throw error;
         }
@@ -99,11 +106,11 @@ const useDomaineStore = create((set) => ({
 
         try {
             const response = await domaineService.NombreDomaines();
-            const nombre = response.data?.NbrDomaines || 0;
+            const nombre = response.data?.NbrDomaines || response?.NbrDomaines || 0;
             set({ nombreDomaines: nombre, loading: false });
             return nombre;
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ error: errorMessage, loading: false });
             throw error;
         }

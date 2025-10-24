@@ -303,7 +303,7 @@ const Epreuves = () => {
 
                     {/* Liste des épreuves */}
                     {!loading && !error && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {epreuves.length > 0 ? (
                                 epreuves.map((epreuve) => (
                                     <div
@@ -314,27 +314,9 @@ const Epreuves = () => {
                                         <EpreuveImage epreuve={epreuve} />
                                         
                                         <div className="p-6">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <h3 className="text-lg font-semibold text-gray-900">
-                                                    {epreuve.titre}
-                                                </h3>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => handleEdit(epreuve)}
-                                                        className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50"
-                                                        title="Modifier l'épreuve"
-                                                    >
-                                                        <Edit size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteClick(epreuve)}
-                                                        className="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50"
-                                                        title="Supprimer l'épreuve"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                                {epreuve.titre}
+                                            </h3>
 
                                             {/* CORRECTION: Utiliser description_epreuve comme dans votre vraie réponse API */}
                                             <p className="text-gray-600 text-sm mb-4 line-clamp-2">
@@ -385,10 +367,27 @@ const Epreuves = () => {
                                                 </div>
 
                                                 {/* Domaine */}
-                                                <div className="pt-2">
+                                                <div className="pt-2 flex items-center justify-between">
                                                     <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                                                         {epreuve.domaine_name || epreuve.id_domaine || 'Aucun domaine'}
                                                     </span>
+
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleEdit(epreuve)}
+                                                            className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50"
+                                                            title="Modifier l'épreuve"
+                                                        >
+                                                            <Edit size={18} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(epreuve)}
+                                                            className="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50"
+                                                            title="Supprimer l'épreuve"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
