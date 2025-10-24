@@ -14,6 +14,7 @@ import Questions from "./pages/Questions/Questions";
 import Propositions from "./pages/Propositions/Propositions";
 import Programme from "./pages/Programme/Programme";
 import Annonces from "./pages/Annonces/Annonces";
+import Tabs from "./pages/Tabs/Tabs";
 import NotFound from "./components/NotFound";
 
 import useAuthAdminStore from "./stores/auth.store";
@@ -174,6 +175,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Annonces />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/tabs/:idEpreuve"
+              element={
+                <ProtectedRoute>
+                  <Tabs />
                 </ProtectedRoute>
               }
             />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Edit, Trash2, Calendar, Clock, Loader, Tag, Image, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Calendar, Clock, Loader, Tag, Image, RefreshCw, AlertCircle, FolderOpen } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import ResponsiveSidebar from "../components/ResponsiveSidebar";
@@ -8,6 +8,7 @@ import useEpreuveStore from "../../stores/epreuves.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ModalEpreuve from "./components/ModalEpreuve";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Epreuves = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +18,8 @@ const Epreuves = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
+
+    const navigate = useNavigate();
 
     // Récupérer la base URL depuis l'environnement ou utiliser celle par défaut
     const API_BASE_URL = import.meta.env.VITE_API_URL || "https://hackaredis.msgroupe.tech";
@@ -339,38 +342,35 @@ const Epreuves = () => {
                                             )}
 
                                             <div className="space-y-2">
-                                                {/* Date de début */}
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <Calendar size={16} />
-                                                    <span className="font-medium">Début:</span>
-                                                    <span>
-                                                        {new Date(epreuve.date_start).toLocaleDateString('fr-FR')}
-                                                    </span>
+                                                <div className="flex items-center justify-between">
+                                                    {/* Date de début */}
+                                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <Calendar size={16} />
+                                                        <span className="font-medium">Début:</span>
+                                                        <span>
+                                                            {new Date(epreuve.date_start).toLocaleDateString('fr-FR')}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Date de fin */}
+                                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <Calendar size={16} />
+                                                        <span className="font-medium">Fin:</span>
+                                                        <span>
+                                                            {new Date(epreuve.date_end).toLocaleDateString('fr-FR')}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
-                                                {/* Date de fin */}
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <Calendar size={16} />
-                                                    <span className="font-medium">Fin:</span>
-                                                    <span>
-                                                        {new Date(epreuve.date_end).toLocaleDateString('fr-FR')}
-                                                    </span>
-                                                </div>
-
-                                                {/* Durée */}
-                                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                    <Clock size={16} />
-                                                    <span className="font-medium">Durée:</span>
-                                                    <span>
-                                                        {epreuve.duree} minutes
-                                                    </span>
-                                                </div>
-
-                                                {/* Domaine */}
-                                                <div className="pt-2 flex items-center justify-between">
-                                                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                                        {epreuve.domaine_name || epreuve.id_domaine || 'Aucun domaine'}
-                                                    </span>
+                                                <div className="flex items-center justify-between">
+                                                    {/* Durée */}
+                                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <Clock size={16} />
+                                                        <span className="font-medium">Durée:</span>
+                                                        <span>
+                                                            {epreuve.duree} minutes
+                                                        </span>
+                                                    </div>
 
                                                     <div className="flex gap-2">
                                                         <button
@@ -388,6 +388,21 @@ const Epreuves = () => {
                                                             <Trash2 size={18} />
                                                         </button>
                                                     </div>
+                                                </div>
+
+                                                {/* Domaine et Boutons Modifier/Supprimer */}
+                                                <div className="pt-2 flex items-center justify-between">
+                                                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                                        {epreuve.domaine_name || epreuve.id_domaine || 'Aucun domaine'}
+                                                    </span>
+
+                                                    <button
+                                                        className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 font-medium flex items-center gap-2 group"
+                                                        onClick={() => navigate(`/tabs/${epreuve.id}`)}
+                                                    >
+                                                        <FolderOpen size={16} className="group-hover:scale-110 transition-transform duration-200" />
+                                                        Gérer les tabs
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
