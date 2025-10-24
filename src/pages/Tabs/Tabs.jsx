@@ -12,7 +12,9 @@ import {
     AlertCircle,
     Loader2,
     Grid3X3,
-    List
+    List,
+    Search,
+    X
 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -34,6 +36,7 @@ const Tabs = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
+    const [searchTerm, setSearchTerm] = useState(''); // Recherche par titre
 
     const { 
         tabs, 
@@ -143,6 +146,16 @@ const Tabs = () => {
             month: 'long',
             year: 'numeric'
         });
+    };
+
+    // Filtrer les tabs selon la recherche
+    const filteredTabs = tabs.filter(tab =>
+        tab.titre.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Effacer la recherche
+    const clearSearch = () => {
+        setSearchTerm('');
     };
 
     return (
@@ -259,8 +272,9 @@ const Tabs = () => {
                         </div>
                     )}
 
-                    {/* Statistiques et métriques */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Statistiques et métriques AVEC BARRE DE RECHERCHE */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {/* Première métrique */}
                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -272,22 +286,9 @@ const Tabs = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
+                        {/* Deuxième métrique */}
                         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-lg font-bold text-slate-900">
-                                        {epreuve ? formatDuree(parseInt(epreuve.duree)) : '0min'}
-                                    </div>
-                                    <div className="text-sm text-slate-600">Durée totale</div>
-                                </div>
-                                <div className="p-3 bg-emerald-100 rounded-lg">
-                                    <Clock className="text-emerald-600" size={24} />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-lg font-bold text-slate-900">
@@ -300,18 +301,39 @@ const Tabs = () => {
                                 </div>
                             </div>
                         </div>
-                        
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-lg font-bold text-slate-900">
-                                        {loading ? '...' : tabs.length}
+
+                        {/* Barre de recherche - TROISIÈME ÉLÉMENT */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+                            <div className="flex flex-col h-full justify-center">
+                                <label htmlFor="search" className="text-sm font-medium text-slate-700 mb-2">
+                                    Rechercher un tab
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Search className="h-4 w-4 text-slate-400" />
                                     </div>
-                                    <div className="text-sm text-slate-600">En cours</div>
+                                    <input
+                                        type="text"
+                                        id="search"
+                                        placeholder="Rechercher par nom..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-400"
+                                    />
+                                    {searchTerm && (
+                                        <button
+                                            onClick={clearSearch}
+                                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors duration-200"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    )}
                                 </div>
-                                <div className="p-3 bg-orange-100 rounded-lg">
-                                    <Loader2 className="text-orange-600" size={24} />
-                                </div>
+                                {searchTerm && (
+                                    <div className="text-xs text-slate-500 mt-2">
+                                        {filteredTabs.length} tab(s) trouvé(s)
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -350,28 +372,63 @@ const Tabs = () => {
                     {/* Liste des tabs */}
                     {!loading && !error && (
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                 <h2 className="text-xl font-semibold text-slate-900">
-                                    Tabs de l'épreuve ({tabs.length})
+                                    Tabs de l'épreuve
+                                    {searchTerm && (
+                                        <span className="text-sm font-normal text-slate-500 ml-2">
+                                            ({filteredTabs.length} résultat(s))
+                                        </span>
+                                    )}
+                                    {!searchTerm && (
+                                        <span className="text-sm font-normal text-slate-500 ml-2">
+                                            ({tabs.length} total)
+                                        </span>
+                                    )}
                                 </h2>
+
+                                {/* Indicateur de recherche sur mobile */}
+                                {searchTerm && (
+                                    <div className="sm:hidden flex items-center gap-2 text-sm text-slate-600 bg-blue-50 px-3 py-1 rounded-full">
+                                        <Search size={14} />
+                                        <span>{filteredTabs.length} résultat(s)</span>
+                                        <button
+                                            onClick={clearSearch}
+                                            className="text-slate-400 hover:text-slate-600"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
-                            {tabs.length > 0 ? (
+                            {filteredTabs.length > 0 ? (
                                 <div className={
                                     viewMode === 'grid' 
                                         ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                                         : "space-y-4"
                                 }>
-                                    {tabs.map((tab) => (
+                                    {filteredTabs.map((tab) => (
                                         <div
                                             key={tab.id}
                                             className={`bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-300 hover:border-slate-300 group ${
-                                                viewMode === 'list' ? 'flex items-center justify-between p-6' : 'p-6'
+                                                viewMode === 'list' 
+                                                    ? 'flex items-center justify-between p-6' 
+                                                    : 'flex flex-col h-full p-6'
                                             }`}
                                         >
-                                            <div className={`${viewMode === 'list' ? 'flex items-center gap-4 flex-1' : ''}`}>
-                                                <div className={`flex items-start gap-4 ${viewMode === 'list' ? 'flex-1' : 'mb-4'}`}>
-                                                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/25">
+                                            {/* Contenu principal */}
+                                            <div className={`${
+                                                viewMode === 'list' 
+                                                    ? 'flex items-center gap-4 flex-1' 
+                                                    : 'flex-1'
+                                            }`}>
+                                                <div className={`flex items-start gap-4 ${
+                                                    viewMode === 'list' 
+                                                        ? 'flex-1' 
+                                                        : 'w-full'
+                                                }`}>
+                                                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg shadow-blue-500/25 flex-shrink-0">
                                                         <FolderOpen className="text-white" size={viewMode === 'list' ? 20 : 24} />
                                                     </div>
 
@@ -383,7 +440,12 @@ const Tabs = () => {
                                                 </div>
                                             </div>
 
-                                            <div className={`flex items-center gap-2 ${viewMode === 'list' ? 'ml-4' : 'mt-4 pt-4 border-t border-slate-100'}`}>
+                                            {/* Actions */}
+                                            <div className={`flex items-center gap-2 ${
+                                                viewMode === 'list' 
+                                                    ? 'ml-4' 
+                                                    : 'mt-4 pt-4 border-t border-slate-100 justify-end'
+                                            }`}>
                                                 <button
                                                     onClick={() => handleEdit(tab)}
                                                     className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
@@ -404,22 +466,45 @@ const Tabs = () => {
                                 </div>
                             ) : (
                                 <div className="text-center py-16 bg-white/50 rounded-2xl border border-slate-200">
-                                    <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                                        <FolderOpen className="text-slate-400" size={32} />
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-slate-600 mb-2">
-                                        Aucun tab créé
-                                    </h3>
-                                    <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                                        Commencez par créer votre premier tab pour organiser le contenu de cette épreuve.
-                                    </p>
-                                    <button
-                                        onClick={handleAdd}
-                                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
-                                    >
-                                        <Plus size={20} />
-                                        Créer le premier tab
-                                    </button>
+                                    {searchTerm ? (
+                                        <>
+                                            <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                                <Search className="text-slate-400" size={32} />
+                                            </div>
+                                            <h3 className="text-xl font-semibold text-slate-600 mb-2">
+                                                Aucun résultat trouvé
+                                            </h3>
+                                            <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                                                Aucun tab ne correspond à votre recherche "{searchTerm}".
+                                            </p>
+                                            <button
+                                                onClick={clearSearch}
+                                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
+                                            >
+                                                <X size={20} />
+                                                Effacer la recherche
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                                <FolderOpen className="text-slate-400" size={32} />
+                                            </div>
+                                            <h3 className="text-xl font-semibold text-slate-600 mb-2">
+                                                Aucun tab créé
+                                            </h3>
+                                            <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                                                Commencez par créer votre premier tab pour organiser le contenu de cette épreuve.
+                                            </p>
+                                            <button
+                                                onClick={handleAdd}
+                                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
+                                            >
+                                                <Plus size={20} />
+                                                Créer le premier tab
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
