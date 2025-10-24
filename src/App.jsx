@@ -13,6 +13,7 @@ import Epreuves from "./pages/Epreuves/Epreuves";
 import Questions from "./pages/Questions/Questions";
 import Propositions from "./pages/Propositions/Propositions";
 import Programme from "./pages/Programme/Programme";
+import SousProgrammes from "./pages/SousProgrammes/SousProgrammes";
 import Annonces from "./pages/Annonces/Annonces";
 import Tabs from "./pages/Tabs/Tabs";
 import Blocs from "./pages/Blocs/Blocs";
@@ -194,6 +195,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Blocs />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/sous-programmes/:idProgramme"
+              element={
+                <ProtectedRoute>
+                  <SousProgrammes />
                 </ProtectedRoute>
               }
             />
