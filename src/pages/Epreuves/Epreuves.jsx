@@ -390,20 +390,24 @@ const Epreuves = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Domaine et Boutons Modifier/Supprimer */}
-                                                <div className="pt-2 flex items-center justify-between">
-                                                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                                        {epreuve.domaine_name || epreuve.id_domaine || 'Aucun domaine'}
-                                                    </span>
+{/* Domaine et Boutons Modifier/Supprimer */}
+<div className="pt-2 flex flex-col-reverse xs:flex-row xs:items-center justify-between gap-2 xs:gap-4">
+    {/* Badge Domaine (en dessous sur mobile, à gauche sur desktop) */}
+    <span className="px-2 py-1 xs:px-3 xs:py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium text-center xs:text-left truncate max-w-full order-2 xs:order-1">
+        {epreuve.domaine_name || epreuve.id_domaine || 'Aucun domaine'}
+    </span>
 
-                                                    <button
-                                                        className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 font-medium flex items-center gap-2 group"
-                                                        onClick={() => navigate(`/tabs/${epreuve.id}`)}
-                                                    >
-                                                        <FolderOpen size={16} className="group-hover:scale-110 transition-transform duration-200" />
-                                                        Gérer les tabs
-                                                    </button>
-                                                </div>
+    {/* Bouton Gérer les tabs (au-dessus sur mobile, à droite sur desktop) */}
+    <button
+        className="px-4 py-2.5 sm:px-5 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 font-medium flex items-center justify-center gap-2 group text-sm sm:text-base whitespace-nowrap flex-shrink-0 order-1 xs:order-2"
+        onClick={() => navigate(`/tabs/${epreuve.id}`)}
+    >
+        <FolderOpen size={16} className="sm:size-5 group-hover:scale-110 transition-transform duration-200 flex-shrink-0" />
+        <span className="truncate">
+            Gérer les tabs
+        </span>
+    </button>
+</div>
                                             </div>
                                         </div>
                                     </div>
