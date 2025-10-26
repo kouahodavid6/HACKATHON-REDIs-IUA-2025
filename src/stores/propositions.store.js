@@ -61,23 +61,23 @@ const usePropositionsStore = create((set, get) => ({
         }
     },
 
-    modifierProposition: async (idQuestion, idProposition, propositionData) => {
+    modifierProposition: async (idProposition, propositionData) => {
         set({ loading: true, error: null });
 
         try {
-            const response = await propositionsService.modifierProposition(idQuestion, idProposition, propositionData);
+            const response = await propositionsService.modifierProposition(idProposition, propositionData);
             
             if (response.succes) {
-                const updateProposition = response.data;
+                const updatedProposition = response.data;
 
                 set(state => ({ 
                     propositions: state.propositions.map(proposition =>
-                        proposition.id === idProposition ? updateProposition : proposition
+                        proposition.id === idProposition ? updatedProposition : proposition
                     ),
                     loading: false
                 }));
 
-                return updateProposition;
+                return updatedProposition;
             } else {
                 throw new Error(response.message || 'Erreur lors de la modification');
             }

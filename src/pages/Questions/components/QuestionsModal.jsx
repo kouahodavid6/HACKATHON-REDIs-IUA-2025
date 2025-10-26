@@ -98,20 +98,15 @@ const QuestionsModal = ({
             return;
         }
 
-        if (!epreuveId) {
-            toast.error('ID de l\'épreuve manquant');
-            return;
-        }
-
         console.log('Données à envoyer:', formData);
-        console.log('ID Epreuve:', epreuveId);
         console.log('Mode édition:', isEdit);
 
         setIsSubmitting(true);
         try {
             if (isEdit) {
                 console.log('Tentative de modification...');
-                await modifierQuestion(epreuveId, question.id, formData);
+                // CORRECTION : Appel correct avec seulement l'ID de la question et les données
+                await modifierQuestion(question.id, formData);
                 toast.success('Question modifiée avec succès');
             } else {
                 console.log('Tentative de création...');

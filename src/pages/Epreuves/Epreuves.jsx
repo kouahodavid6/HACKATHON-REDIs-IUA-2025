@@ -319,7 +319,7 @@ const Epreuves = () => {
 
                     {/* Liste des épreuves */}
                     {!loading && !error && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {epreuves.length > 0 ? (
                                 epreuves.map((epreuve) => (
                                     <div
@@ -355,7 +355,7 @@ const Epreuves = () => {
                                             )}
 
                                             <div className="space-y-2">
-                                                <div className="flex items-center justify-between">
+                                                <div className="flex-col md:flex md:items-start items-center justify-between">
                                                     {/* Date de début */}
                                                     <div className="flex items-center gap-2 text-sm text-gray-600">
                                                         <Calendar size={16} />

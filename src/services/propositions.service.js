@@ -21,9 +21,13 @@ const listerPropositions = async (idQuestion) => {
     }
 }
 
-const modifierProposition = async () => {
+const modifierProposition = async (idProposition, propositionData) => {
     try {
-        throw new Error('La modification de propositions n\'est pas encore disponible');
+        const response = await axiosInstance.post(`/api/UpdtateProposition/${idProposition}`, {
+            libelle_propositions: propositionData.libelle_propositions,
+            is_correct: propositionData.is_correct
+        });
+        return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors de la modification de la proposition');
     }

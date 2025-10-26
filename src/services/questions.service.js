@@ -22,9 +22,14 @@ const listerQuestions = async (idEpreuve) => {
     }
 }
 
-const modifierQuestion = async () => {
+const modifierQuestion = async (idQuestion, questionData) => {
     try {
-        throw new Error('La modification de questions n\'est pas encore disponible');
+        const response = await axiosInstance.post(`/api/UpdtadeQuestion/${idQuestion}`, {
+            libelle: questionData.libelle,
+            type: questionData.type,
+            time_in_seconds: questionData.time_in_seconds
+        });
+        return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors de la modification de la question');
     }
@@ -33,10 +38,9 @@ const modifierQuestion = async () => {
 const supprimerQuestion = async (idQuestion) => {
     try {
         const response = await axiosInstance.post(`/api/DeleteQuestions/${idQuestion}`);
-
         return response.data;
     } catch (error) {
-throw new Error(error.response?.data?.message || 'Erreur lors de la suppression de la tab');
+        throw new Error(error.response?.data?.message || 'Erreur lors de la suppression de la question');
     }
 }
 

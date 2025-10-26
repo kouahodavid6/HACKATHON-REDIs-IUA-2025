@@ -61,23 +61,23 @@ const useQuestionsStore = create((set) => ({
         }
     },
 
-    modifierQuestion: async (idEpreuve, idQuestion, questionData) => {
+    modifierQuestion: async (idQuestion, questionData) => {
         set({ loading: true, error: null });
 
         try {
-            const response = await questionsService.modifierQuestion(idEpreuve, idQuestion, questionData);
+            const response = await questionsService.modifierQuestion(idQuestion, questionData);
             
             if (response.succes) {
-                const updateQuestion = response.data;
+                const updatedQuestion = response.data;
 
                 set(state => ({ 
                     questions: state.questions.map(question =>
-                        question.id === idQuestion ? updateQuestion : question
+                        question.id === idQuestion ? updatedQuestion : question
                     ),
                     loading: false
                 }));
 
-                return updateQuestion;
+                return updatedQuestion;
             } else {
                 throw new Error(response.message || 'Erreur lors de la modification');
             }
@@ -97,7 +97,6 @@ const useQuestionsStore = create((set) => ({
             const response = await questionsService.supprimerQuestion(idQuestion);
 
             if (response.succes !== false) {
-                // Mise à jour optimiste de l'état local
                 set(state => ({
                     questions: state.questions.filter(q => q.id !== idQuestion),
                     loading: false

@@ -84,20 +84,15 @@ const PropositionsModal = ({
             return;
         }
 
-        if (!questionId) {
-            toast.error('ID de la question manquant');
-            return;
-        }
-
         console.log('Données à envoyer:', formData);
-        console.log('ID Question:', questionId);
         console.log('Mode édition:', isEdit);
 
         setIsSubmitting(true);
         try {
             if (isEdit) {
                 console.log('Tentative de modification...');
-                await modifierProposition(questionId, proposition.id, formData);
+                // CORRECTION : Appel correct avec seulement l'ID de la proposition et les données
+                await modifierProposition(proposition.id, formData);
                 toast.success('Proposition modifiée avec succès');
             } else {
                 console.log('Tentative de création...');
