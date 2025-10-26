@@ -11,7 +11,6 @@ import {
     HelpCircle,
     ListChecks,
     Calendar,
-    CalendarDays,
     Bell,
     LogOut,
 } from 'lucide-react';
@@ -43,8 +42,8 @@ const DashboardSidebar = () => {
         { path: '/equipes', name: 'Équipes', icon: <ShieldHalf className="h-5 w-5" /> },
         { path: '/domaines', name: 'Domaines', icon: <FolderTree className="h-5 w-5" /> },
         { path: '/epreuves', name: 'Épreuves', icon: <FileText className="h-5 w-5" /> },
-        { path: '/questions', name: 'Questions', icon: <HelpCircle className="h-5 w-5" /> },
-        { path: '/propositions', name: 'Propositions', icon: <ListChecks className="h-5 w-5" /> },
+        // { path: '/questions', name: 'Questions', icon: <HelpCircle className="h-5 w-5" /> },
+        // { path: '/propositions', name: 'Propositions', icon: <ListChecks className="h-5 w-5" /> },
         { path: '/programme', name: 'Programme', icon: <Calendar className="h-5 w-5" /> },
         { path: '/annonces', name: 'Annonces', icon: <Bell className="h-5 w-5" /> },
     ];

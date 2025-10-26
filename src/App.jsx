@@ -146,21 +146,21 @@ function App() {
             />
 
             <Route
-              path="/questions"
-              element={
-                <ProtectedRoute>
-                  <Questions />
-                </ProtectedRoute>
-              }
+                path="/questions/:idEpreuve"
+                element={
+                    <ProtectedRoute>
+                        <Questions />
+                    </ProtectedRoute>
+                }
             />
 
             <Route
-              path="/propositions"
-              element={
-                <ProtectedRoute>
-                  <Propositions />
-                </ProtectedRoute>
-              }
+                path="/propositions/:idQuestion"
+                element={
+                    <ProtectedRoute>
+                        <Propositions />
+                    </ProtectedRoute>
+                }
             />
 
             <Route
