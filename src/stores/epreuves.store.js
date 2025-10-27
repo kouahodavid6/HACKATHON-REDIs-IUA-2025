@@ -113,28 +113,43 @@ const useEpreuveStore = create((set, get) => ({
 
     // NOUVEAU : Action pour récupérer le classement
     getClassementEpreuve: async (idEpreuve) => {
-        set({ loadingClassement: true, error: null });
+    set({ loadingClassement: true, error: null });
+    
+    try {
+        const response = await epreuveService.ClassementEpreuve(idEpreuve);
         
-        try {
-            const response = await epreuveService.ClassementEpreuve(idEpreuve);
-            
-            const classementData = response.data || response || [];
-            
-            set({ 
-                classement: classementData,
-                loadingClassement: false 
-            });
-            
-            return response;
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
-            set({ 
-                error: errorMessage, 
-                loadingClassement: false 
-            });
-            throw error;
+        console.log('🔍 Analyse de la réponse du service:', {
+            response: response,
+            succes: response.succes,    // response est déjà {succes, message, data}
+            message: response.message,
+            data: response.data         // response.data est le tableau des équipes
+        });
+        
+        let classementData = [];
+        
+        // CORRECTION : response est déjà l'objet {succes, message, data}
+        if (response && response.succes) {
+            classementData = response.data || [];  // response.data est le tableau
         }
-    },
+        
+        console.log('📈 Classement final:', classementData);
+        
+        set({ 
+            classement: classementData,
+            loadingClassement: false 
+        });
+        
+        return classementData;
+    } catch (error) {
+        console.error('💥 Erreur dans getClassementEpreuve:', error);
+        const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du chargement du classement';
+        set({ 
+            error: errorMessage, 
+            loadingClassement: false 
+        });
+        throw error;
+    }
+},
 
     // NOUVEAU : Réinitialiser le classement
     clearClassement: () => set({ classement: [] }),

@@ -4,7 +4,6 @@ import {
     Medal, 
     Users, 
     Award, 
-    Clock, 
     Calendar,
     ArrowLeft,
     Loader,
