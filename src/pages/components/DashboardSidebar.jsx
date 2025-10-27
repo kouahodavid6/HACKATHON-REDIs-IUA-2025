@@ -65,8 +65,7 @@ const DashboardSidebar = () => {
                     <Link to="/dashboard" className="flex items-center space-x-2">
                         {/* <Store className="h-8 w-8 text-emerald-500" /> */}
                         <div className="font-bold text-xl text-white">
-                            {/* Hackathon-Redis-IUA */}
-                            Gestion Estudiantine
+                            HackaRedis IUA
                         </div>
                     </Link>
                 </div>

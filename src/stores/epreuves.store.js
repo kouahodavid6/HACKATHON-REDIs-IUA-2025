@@ -3,10 +3,12 @@ import { epreuveService } from "../services/epreuves.service";
 
 const useEpreuveStore = create((set, get) => ({
     epreuves: [],
+    classement: [], // NOUVEAU : État pour le classement
     loading: false,
     error: null,
     success: false,
     currentEpreuve: null,
+    loadingClassement: false, // NOUVEAU : Loading spécifique au classement
 
     // Actions
     ajouterEpreuve: async (formData) => {
@@ -15,7 +17,6 @@ const useEpreuveStore = create((set, get) => ({
         try {
             const response = await epreuveService.AjouterEpreuve(formData);
             
-            // CORRECTION: La réponse de l'API contient directement les données
             const nouvelleEpreuve = response.data || response;
             
             set(state => ({ 
@@ -42,7 +43,6 @@ const useEpreuveStore = create((set, get) => ({
         try {
             const response = await epreuveService.ListerEpreuves();
             
-            // CORRECTION: La réponse de l'API contient directement le tableau
             const epreuvesData = response.data || response || [];
             
             set({ 
@@ -83,12 +83,10 @@ const useEpreuveStore = create((set, get) => ({
         }
     },
 
-    // CORRECTION: Ajout de la fonction modifierEpreuve manquante
     modifierEpreuve: async (id, formData) => {
         set({ loading: true, error: null, success: false });
         
         try {
-            // NOTE: Vous devrez créer cette fonction dans epreuveService
             const response = await epreuveService.ModifierEpreuve(id, formData);
             
             const epreuveModifiee = response.data || response;
@@ -112,6 +110,34 @@ const useEpreuveStore = create((set, get) => ({
             throw error;
         }
     },
+
+    // NOUVEAU : Action pour récupérer le classement
+    getClassementEpreuve: async (idEpreuve) => {
+        set({ loadingClassement: true, error: null });
+        
+        try {
+            const response = await epreuveService.ClassementEpreuve(idEpreuve);
+            
+            const classementData = response.data || response || [];
+            
+            set({ 
+                classement: classementData,
+                loadingClassement: false 
+            });
+            
+            return response;
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.response?.message || error.message;
+            set({ 
+                error: errorMessage, 
+                loadingClassement: false 
+            });
+            throw error;
+        }
+    },
+
+    // NOUVEAU : Réinitialiser le classement
+    clearClassement: () => set({ classement: [] }),
 
     // Gestion de l'épreuve sélectionnée
     setCurrentEpreuve: (epreuve) => set({ currentEpreuve: epreuve }),

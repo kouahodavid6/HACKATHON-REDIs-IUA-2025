@@ -36,7 +36,6 @@ const ListerEpreuves = async () => {
     }
 }
 
-// CORRECTION: Ajout de la fonction manquante pour modifier une épreuve
 const ModifierEpreuve = async (id, formData) => {
     try {
         console.log("Modification de l'épreuve ID:", id);
@@ -66,9 +65,28 @@ const SupprimerEpreuve = async (id) => {
     }
 }
 
+// NOUVEAU : Récupérer le classement d'une épreuve
+const ClassementEpreuve = async (idEpreuve) => {
+    try {
+        console.log("Chargement du classement pour l'épreuve:", idEpreuve);
+        const response = await axiosInstance.get(`/api/ClassementEpreuve/${idEpreuve}`);
+        console.log("Réponse du classement:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors du chargement du classement:", error);
+        console.error("Détails de l'erreur:", {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
+        throw error;
+    }
+}
+
 export const epreuveService = {
     AjouterEpreuve,
     ListerEpreuves,
-    ModifierEpreuve, // CORRECTION: Ajout de cette fonction
-    SupprimerEpreuve
+    ModifierEpreuve,
+    SupprimerEpreuve,
+    ClassementEpreuve
 }

@@ -43,13 +43,11 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-                  Bienvenue à vous, Administrateur du <br/> Gestionnaire estudiantin
-                  {/* HACKATHON-REDIs-IUA-2025 */}
+                  Bienvenue à vous, Administrateur du <br/> HACKATHON-REDIs-IUA-2025
                 </h1>
 
                 <p className="text-blue-300 mt-2">
-                  Vue d'ensemble de la plateforme estudiantine
-                  {/* Hackathon */}
+                  Vue d'ensemble du HackaRedis IUA
                 </p>
               </div>
               <motion.div

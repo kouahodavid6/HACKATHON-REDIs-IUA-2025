@@ -17,6 +17,7 @@ import SousProgrammes from "./pages/SousProgrammes/SousProgrammes";
 import Annonces from "./pages/Annonces/Annonces";
 import Tabs from "./pages/Tabs/Tabs";
 import Blocs from "./pages/Blocs/Blocs";
+import ClassementEquipesEpreuve from "./pages/ClassementEquipesEpreuve/ClassementEquipesEpreuve";
 import NotFound from "./components/NotFound";
 
 import useAuthAdminStore from "./stores/auth.store";
@@ -141,6 +142,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Epreuves />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/classement-epreuve/:idEpreuve"
+              element={
+                <ProtectedRoute>
+                  <ClassementEquipesEpreuve  />
                 </ProtectedRoute>
               }
             />

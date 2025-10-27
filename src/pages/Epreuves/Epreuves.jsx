@@ -11,7 +11,8 @@ import {
     RefreshCw, 
     AlertCircle, 
     FolderOpen, 
-    List 
+    List,
+    Trophy 
 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -419,6 +420,15 @@ const Epreuves = () => {
                                                         <span className="truncate">
                                                             Gérer les tabs
                                                         </span>
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => navigate(`/classement-epreuve/${epreuve.id}`)}
+                                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-violet-50 text-violet-600 hover:text-violet-800 transition-colors rounded-lg hover:bg-violet-100"
+                                                        title="Voir le classement"
+                                                    >
+                                                        <Trophy size={16} />
+                                                        <span className="hidden sm:inline">Classement</span>
                                                     </button>
 
                                                     <button
