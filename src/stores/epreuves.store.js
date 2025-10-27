@@ -3,12 +3,12 @@ import { epreuveService } from "../services/epreuves.service";
 
 const useEpreuveStore = create((set, get) => ({
     epreuves: [],
-    classement: [], // NOUVEAU : État pour le classement
+    classement: [],
     loading: false,
     error: null,
     success: false,
     currentEpreuve: null,
-    loadingClassement: false, // NOUVEAU : Loading spécifique au classement
+    loadingClassement: false,
 
     // Actions
     ajouterEpreuve: async (formData) => {
