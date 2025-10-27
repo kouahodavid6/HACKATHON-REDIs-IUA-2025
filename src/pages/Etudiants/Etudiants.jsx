@@ -103,7 +103,7 @@ const Etudiants = () => {
                     />
 
                     {/* Cartes de statistiques */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                             <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
                             <div className="text-sm text-gray-600">Total étudiants</div>
@@ -115,10 +115,6 @@ const Etudiants = () => {
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                             <div className="text-2xl font-bold text-green-600">{stats.membres}</div>
                             <div className="text-sm text-gray-600">Membres</div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                            <div className="text-2xl font-bold text-purple-600">{stats.pourcentageCreateurs}%</div>
-                            <div className="text-sm text-gray-600">Créateurs</div>
                         </div>
                     </div>
 

@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { 
     Trophy, 
     Medal, 
-    Users, 
-    Award, 
+    Users,
     Calendar,
     ArrowLeft,
     Loader,
@@ -148,7 +147,7 @@ const ClassementEquipesEpreuve = () => {
                         </div>
 
                         {/* Statistiques du classement */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <Users size={24} />
@@ -158,7 +157,7 @@ const ClassementEquipesEpreuve = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp size={24} />
@@ -167,18 +166,6 @@ const ClassementEquipesEpreuve = () => {
                                             {classement.length > 0 ? Math.max(...classement.map(e => e.score)) : 0}
                                         </div>
                                         <div className="text-green-100">Meilleur score</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl p-4 shadow-lg">
-                                <div className="flex items-center gap-3">
-                                    <Award size={24} />
-                                    <div>
-                                        <div className="text-2xl font-bold">
-                                            {classement.filter(e => e.score > 0).length}
-                                        </div>
-                                        <div className="text-purple-100">Équipes avec score</div>
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +235,7 @@ const ClassementEquipesEpreuve = () => {
                                                                 <div className="flex items-center gap-1">
                                                                     <Calendar size={14} />
                                                                     <span>
-                                                                        Inscrite le {formatDate(equipe.created_at)}
+                                                                        Fini le {formatDate(equipe.created_at)}
                                                                     </span>
                                                                 </div>
                                                             </div>

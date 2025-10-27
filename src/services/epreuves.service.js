@@ -73,9 +73,9 @@ const ClassementEpreuve = async (idEpreuve) => {
         
         console.log("✅ Réponse API complète:", response);
         console.log("📊 Structure des données:", {
-            succes: response.data?.succes,
-            message: response.data?.message,
-            data: response.data?.data
+            succes: response.succes,
+            message: response.message,
+            data: response.data
         });
         
         // CORRECTION : Retourner response.data (qui contient {succes, message, data})
