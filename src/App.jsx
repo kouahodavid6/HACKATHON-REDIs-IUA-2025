@@ -5,19 +5,21 @@ import { useEffect } from "react";
 
 import LoginAdmin from "./pages/Auth/LoginAdmin";
 import RegisterAdmin from "./pages/Auth/RegisterAdmin";
+
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Etudiants from "./pages/Etudiants/Etudiants";
 import Equipes from "./pages/Equipes/Equipes";
 import Domaines from "./pages/Domaines/Domaines";
 import Epreuves from "./pages/Epreuves/Epreuves";
+import Tabs from "./pages/Tabs/Tabs";
+import Blocs from "./pages/Blocs/Blocs";
 import Questions from "./pages/Questions/Questions";
 import Propositions from "./pages/Propositions/Propositions";
+import ClassementEquipesEpreuve from "./pages/ClassementEquipesEpreuve/ClassementEquipesEpreuve";
 import Programme from "./pages/Programme/Programme";
 import SousProgrammes from "./pages/SousProgrammes/SousProgrammes";
 import Annonces from "./pages/Annonces/Annonces";
-import Tabs from "./pages/Tabs/Tabs";
-import Blocs from "./pages/Blocs/Blocs";
-import ClassementEquipesEpreuve from "./pages/ClassementEquipesEpreuve/ClassementEquipesEpreuve";
+
 import NotFound from "./components/NotFound";
 
 import useAuthAdminStore from "./stores/auth.store";
