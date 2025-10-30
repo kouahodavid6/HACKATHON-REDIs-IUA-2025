@@ -10,7 +10,10 @@ import {
     Crown,
     Star,
     TrendingUp,
-    Target
+    Target,
+    Search,
+    Filter,
+    X
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardSidebar from "../components/DashboardSidebar";
@@ -23,6 +26,9 @@ const ClassementEquipesEpreuve = () => {
     const { idEpreuve } = useParams();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [scoreFilter, setScoreFilter] = useState("");
+    const [showFilters, setShowFilters] = useState(false);
 
     const {
         classement,
@@ -92,6 +98,44 @@ const ClassementEquipesEpreuve = () => {
         });
     };
 
+    // Filtrer le classement
+    const filteredClassement = classement.filter(equipe => {
+        const matchesSearch = equipe.team_name.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        let matchesScore = true;
+        if (scoreFilter) {
+            const score = equipe.score;
+            switch (scoreFilter) {
+                case "excellent":
+                    matchesScore = score >= 90;
+                    break;
+                case "bon":
+                    matchesScore = score >= 70 && score < 90;
+                    break;
+                case "moyen":
+                    matchesScore = score >= 50 && score < 70;
+                    break;
+                case "faible":
+                    matchesScore = score < 50;
+                    break;
+                default:
+                    matchesScore = true;
+            }
+        }
+        
+        return matchesSearch && matchesScore;
+    });
+
+    // Réinitialiser tous les filtres
+    const resetFilters = () => {
+        setSearchTerm("");
+        setScoreFilter("");
+    };
+
+    // Obtenir le nombre de résultats filtrés
+    const resultsCount = filteredClassement.length;
+    const totalCount = classement.length;
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex flex-col md:flex-row">
             <ResponsiveSidebar
@@ -147,7 +191,7 @@ const ClassementEquipesEpreuve = () => {
                         </div>
 
                         {/* Statistiques du classement */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <Users size={24} />
@@ -169,8 +213,125 @@ const ClassementEquipesEpreuve = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl p-4 shadow-lg">
+                                <div className="flex items-center gap-3">
+                                    <TrendingUp size={24} className="rotate-90" />
+                                    <div>
+                                        <div className="text-2xl font-bold">
+                                            {classement.length > 0 ? Math.min(...classement.map(e => e.score)) : 0}
+                                        </div>
+                                        <div className="text-gray-100">Faible score</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    {/* Barre de recherche et filtres */}
+                    {classement.length > 0 && !loadingClassement && (
+                        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                {/* Barre de recherche */}
+                                <div className="flex-1 relative">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                        <input
+                                            type="text"
+                                            placeholder="Rechercher une équipe..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                        />
+                                        {searchTerm && (
+                                            <button
+                                                onClick={() => setSearchTerm("")}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Bouton filtre */}
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className={`flex items-center gap-2 px-4 py-3 border rounded-lg transition-colors ${
+                                            showFilters || scoreFilter
+                                                ? "bg-indigo-50 border-indigo-300 text-indigo-700"
+                                                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                        }`}
+                                    >
+                                        <Filter size={20} />
+                                        Filtres
+                                        {(searchTerm || scoreFilter) && (
+                                            <span className="bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                {(searchTerm ? 1 : 0) + (scoreFilter ? 1 : 0)}
+                                            </span>
+                                        )}
+                                    </button>
+
+                                    {(searchTerm || scoreFilter) && (
+                                        <button
+                                            onClick={resetFilters}
+                                            className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                        >
+                                            <X size={20} />
+                                            Réinitialiser
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Filtres étendus */}
+                            {showFilters && (
+                                <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Filtrer par score</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        {[
+                                            { value: "excellent", label: "Excellent (90-100)", color: "bg-green-500" },
+                                            { value: "bon", label: "Bon (70-89)", color: "bg-blue-500" },
+                                            { value: "moyen", label: "Moyen (50-69)", color: "bg-yellow-500" },
+                                            { value: "faible", label: "Faible (<50)", color: "bg-red-500" }
+                                        ].map(filter => (
+                                            <button
+                                                key={filter.value}
+                                                onClick={() => setScoreFilter(scoreFilter === filter.value ? "" : filter.value)}
+                                                className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+                                                    scoreFilter === filter.value
+                                                        ? "bg-white border-indigo-300 shadow-sm"
+                                                        : "bg-white border-gray-300 hover:border-gray-400"
+                                                }`}
+                                            >
+                                                <div className={`w-3 h-3 rounded-full ${filter.color}`}></div>
+                                                <span className="text-sm text-gray-700">{filter.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Résultats de la recherche */}
+                            {(searchTerm || scoreFilter) && (
+                                <div className="mt-4 flex items-center justify-between">
+                                    <div className="text-sm text-gray-600">
+                                        {resultsCount} équipe{resultsCount > 1 ? 's' : ''} trouvée{resultsCount > 1 ? 's' : ''}
+                                        {totalCount > 0 && ` sur ${totalCount}`}
+                                    </div>
+                                    {resultsCount === 0 && (
+                                        <button
+                                            onClick={resetFilters}
+                                            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                                        >
+                                            Afficher toutes les équipes
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Loading state */}
                     {loadingClassement && (
@@ -202,9 +363,9 @@ const ClassementEquipesEpreuve = () => {
                     {/* Classement */}
                     {!loadingClassement && !error && (
                         <div className="space-y-4">
-                            {classement.length > 0 ? (
-                                classement.map((equipe, index) => {
-                                    const rank = index + 1;
+                            {filteredClassement.length > 0 ? (
+                                filteredClassement.map((equipe) => {
+                                    const rank = classement.findIndex(e => e.id === equipe.id) + 1;
                                     const medal = getMedal(rank);
                                     const MedalIcon = medal.icon;
 
@@ -280,22 +441,43 @@ const ClassementEquipesEpreuve = () => {
                                 })
                             ) : (
                                 <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-                                    <Trophy className="text-gray-400 mx-auto mb-4" size={64} />
-                                    <h3 className="text-2xl font-bold text-gray-600 mb-2">
-                                        Aucune équipe inscrite
-                                    </h3>
-                                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                                        Aucune équipe n'a encore participé à cette épreuve. 
-                                        Le classement apparaîtra ici dès que les premières équipes auront commencé.
-                                    </p>
-                                    <div className="flex justify-center gap-4">
-                                        <button
-                                            onClick={() => navigate('/epreuves')}
-                                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                                        >
-                                            Retour aux épreuves
-                                        </button>
-                                    </div>
+                                    {searchTerm || scoreFilter ? (
+                                        <>
+                                            <Search className="text-gray-400 mx-auto mb-4" size={64} />
+                                            <h3 className="text-2xl font-bold text-gray-600 mb-2">
+                                                Aucune équipe trouvée
+                                            </h3>
+                                            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                                                Aucune équipe ne correspond à vos critères de recherche.
+                                                Essayez de modifier vos filtres ou votre recherche.
+                                            </p>
+                                            <button
+                                                onClick={resetFilters}
+                                                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                            >
+                                                Réinitialiser les filtres
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trophy className="text-gray-400 mx-auto mb-4" size={64} />
+                                            <h3 className="text-2xl font-bold text-gray-600 mb-2">
+                                                Aucune équipe inscrite
+                                            </h3>
+                                            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                                                Aucune équipe n'a encore participé à cette épreuve. 
+                                                Le classement apparaîtra ici dès que les premières équipes auront commencé.
+                                            </p>
+                                            <div className="flex justify-center gap-4">
+                                                <button
+                                                    onClick={() => navigate('/epreuves')}
+                                                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                                >
+                                                    Retour aux épreuves
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>

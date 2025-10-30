@@ -1,10 +1,10 @@
 import {
-    Users,
-    ShieldHalf,
-    FolderTree,
-    FileText,
-    HelpCircle,
-    ListChecks,
+    // Users,
+    // ShieldHalf,
+    // FolderTree,
+    // FileText,
+    // HelpCircle,
+    // ListChecks,
     Calendar,
     Bell
 }
@@ -26,6 +26,5 @@ const modules = [
 ];
 
 export const data  = {
-    // cards,
     modules
 }
