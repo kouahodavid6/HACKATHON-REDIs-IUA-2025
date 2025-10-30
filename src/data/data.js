@@ -19,9 +19,9 @@ from "lucide-react";
 // ];
 
 const modules = [
-    { title: 'Questions', icon: HelpCircle, path: '/questions', color: 'bg-cyan-500' },
+    //{ title: 'Questions', icon: HelpCircle, path: '/questions', color: 'bg-cyan-500' },
     // { title: 'Propositions', icon: ListChecks, path: '/propositions', color: 'bg-indigo-500' },
-    // { title: 'Programmes', icon: Calendar, path: '/programme', color: 'bg-pink-500' },
+    { title: 'Programmes', icon: Calendar, path: '/programme', color: 'bg-pink-500' },
     { title: 'Annonces', icon: Bell, path: '/annonces', color: 'bg-orange-500' },
 ];
 
