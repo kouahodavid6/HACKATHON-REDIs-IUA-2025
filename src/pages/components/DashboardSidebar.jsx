@@ -72,8 +72,7 @@ const DashboardSidebar = () => {
                             />
                         </div>
                         <h1 className="font-bold text-xl text-white italic">
-                            {/* HackaRedis */}
-                            Bibliothèques
+                            Hacka-Admin
                         </h1>
                     </Link>
                 </div>
