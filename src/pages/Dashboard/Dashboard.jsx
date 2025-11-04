@@ -47,7 +47,8 @@ const Dashboard = () => {
                 </h1>
 
                 <p className="text-blue-300 mt-2">
-                  Vue d'ensemble du HackaRedis IUA
+                  {/* Vue d'ensemble du HackaRedis IUA */}
+                  Vue d'ensemble de la bibliothèque
                 </p>
               </div>
               <motion.div

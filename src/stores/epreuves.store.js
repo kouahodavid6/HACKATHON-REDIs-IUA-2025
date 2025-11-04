@@ -111,47 +111,43 @@ const useEpreuveStore = create((set, get) => ({
         }
     },
 
-    // NOUVEAU : Action pour récupérer le classement
+// CORRIGÉ : Action pour récupérer le classement
     getClassementEpreuve: async (idEpreuve) => {
-    set({ loadingClassement: true, error: null });
-    
-    try {
-        const response = await epreuveService.ClassementEpreuve(idEpreuve);
+        set({ loadingClassement: true, error: null });
         
-        console.log('🔍 Analyse de la réponse du service:', {
-            response: response,
-            succes: response.succes,    // response est déjà {succes, message, data}
-            message: response.message,
-            data: response.data         // response.data est le tableau des équipes
-        });
-        
-        let classementData = [];
-        
-        // CORRECTION : response est déjà l'objet {succes, message, data}
-        if (response && response.succes) {
-            classementData = response.data || [];  // response.data est le tableau
+        try {
+            console.log('Début de getClassementEpreuve pour:', idEpreuve);
+            const response = await epreuveService.ClassementEpreuve(idEpreuve);
+            
+            let classementData = [];
+            
+            // CORRECTION : Basé sur votre structure API
+            if (response && response.succes === true && Array.isArray(response.data)) {
+                classementData = response.data;
+                console.log('Classement chargé:', classementData.length, 'équipes');
+            } else {
+                console.warn('Structure de réponse inattendue:', response);
+                classementData = [];
+            }
+            
+            set({ 
+                classement: classementData,
+                loadingClassement: false 
+            });
+            
+            return classementData;
+        } catch (error) {
+            console.error('Erreur dans getClassementEpreuve:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du chargement du classement';
+            set({ 
+                error: errorMessage, 
+                loadingClassement: false 
+            });
+            throw error;
         }
-        
-        console.log('📈 Classement final:', classementData);
-        
-        set({ 
-            classement: classementData,
-            loadingClassement: false 
-        });
-        
-        return classementData;
-    } catch (error) {
-        console.error('💥 Erreur dans getClassementEpreuve:', error);
-        const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du chargement du classement';
-        set({ 
-            error: errorMessage, 
-            loadingClassement: false 
-        });
-        throw error;
-    }
-},
+    },
 
-    // NOUVEAU : Réinitialiser le classement
+    // Réinitialiser le classement
     clearClassement: () => set({ classement: [] }),
 
     // Gestion de l'épreuve sélectionnée

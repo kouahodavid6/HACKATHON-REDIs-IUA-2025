@@ -65,23 +65,26 @@ const SupprimerEpreuve = async (id) => {
     }
 }
 
-// NOUVEAU : Récupérer le classement d'une épreuve
+// CORRIGÉ : Récupérer le classement d'une épreuve
 const ClassementEpreuve = async (idEpreuve) => {
     try {
-        console.log("🔄 Chargement du classement pour l'épreuve:", idEpreuve);
+        console.log("Chargement du classement pour l'épreuve:", idEpreuve);
         const response = await axiosInstance.get(`/api/ClassementEpreuve/${idEpreuve}`);
-        
-        console.log("✅ Réponse API complète:", response);
-        console.log("📊 Structure des données:", {
-            succes: response.succes,
-            message: response.message,
-            data: response.data
-        });
-        
-        // CORRECTION : Retourner response.data (qui contient {succes, message, data})
-        return response.data;
+
+        // CORRECTION : Vérification basée sur votre structure API
+        if (response.data && response.data.succes === true) {
+            console.log("Classement chargé avec succès");
+            return response.data;
+        } else {
+            throw new Error("Structure de réponse invalide");
+        }
     } catch (error) {
-        console.error("❌ Erreur lors du chargement du classement:", error);
+        console.error("Erreur lors du chargement du classement:", error);
+        console.error("Détails de l'erreur:", {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+        });
         throw error;
     }
 }

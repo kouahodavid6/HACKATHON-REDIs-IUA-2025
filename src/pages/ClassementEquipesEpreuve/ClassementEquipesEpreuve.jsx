@@ -43,6 +43,14 @@ const ClassementEquipesEpreuve = () => {
     // Récupérer les informations de l'épreuve
     const epreuve = getEpreuveById(idEpreuve);
 
+    // DEBUG : Afficher les données du classement
+    useEffect(() => {
+        console.log('Données du classement:', classement);
+        if (classement.length > 0) {
+            console.log('Première équipe:', classement[0]);
+        }
+    }, [classement]);
+
     // Charger le classement
     const chargerClassement = useCallback(async () => {
         if (!idEpreuve) return;
@@ -98,28 +106,43 @@ const ClassementEquipesEpreuve = () => {
         });
     };
 
+    // CORRIGÉ : Fonction utilitaire pour obtenir le nombre total de questions
+    const getTotalQuestions = (equipe) => {
+        // CORRECTION : Utiliser scoreTotalPossible depuis votre API
+        const total = equipe.scoreTotalPossible;
+        console.log(`Équipe ${equipe.team_name}: score=${equipe.score}, totalPossible=${total}`);
+        return total;
+    };
+
     // Filtrer le classement
     const filteredClassement = classement.filter(equipe => {
         const matchesSearch = equipe.team_name.toLowerCase().includes(searchTerm.toLowerCase());
         
         let matchesScore = true;
         if (scoreFilter) {
+            const totalQuestions = getTotalQuestions(equipe);
             const score = equipe.score;
-            switch (scoreFilter) {
-                case "excellent":
-                    matchesScore = score >= 90;
-                    break;
-                case "bon":
-                    matchesScore = score >= 70 && score < 90;
-                    break;
-                case "moyen":
-                    matchesScore = score >= 50 && score < 70;
-                    break;
-                case "faible":
-                    matchesScore = score < 50;
-                    break;
-                default:
-                    matchesScore = true;
+            
+            if (totalQuestions && totalQuestions > 0) {
+                switch (scoreFilter) {
+                    case "excellent":
+                        matchesScore = score === totalQuestions;
+                        break;
+                    case "bon":
+                        matchesScore = score >= Math.floor(totalQuestions * 0.7) && score < totalQuestions;
+                        break;
+                    case "moyen":
+                        matchesScore = score >= Math.floor(totalQuestions * 0.5) && score < Math.floor(totalQuestions * 0.7);
+                        break;
+                    case "faible":
+                        matchesScore = score < Math.floor(totalQuestions * 0.5);
+                        break;
+                    default:
+                        matchesScore = true;
+                }
+            } else {
+                // Si scoreTotalPossible est 0, on ne peut pas filtrer par score
+                matchesScore = true;
             }
         }
         
@@ -135,6 +158,49 @@ const ClassementEquipesEpreuve = () => {
     // Obtenir le nombre de résultats filtrés
     const resultsCount = filteredClassement.length;
     const totalCount = classement.length;
+
+    // CORRIGÉ : Obtenir les labels des filtres
+    const getFilterLabels = () => {
+        const firstTeam = classement[0];
+        const totalQuestions = firstTeam ? getTotalQuestions(firstTeam) : null;
+        
+        // CORRECTION : Si scoreTotalPossible est 0, désactiver les filtres basés sur le score
+        if (!totalQuestions || totalQuestions === 0) {
+            return [
+                { value: "excellent", label: "Excellent", color: "bg-green-500", disabled: true },
+                { value: "bon", label: "Bon", color: "bg-blue-500", disabled: true },
+                { value: "moyen", label: "Moyen", color: "bg-yellow-500", disabled: true },
+                { value: "faible", label: "Faible", color: "bg-red-500", disabled: true }
+            ];
+        }
+        
+        return [
+            { 
+                value: "excellent", 
+                label: `Excellent (${totalQuestions}/${totalQuestions})`, 
+                color: "bg-green-500",
+                disabled: false
+            },
+            { 
+                value: "bon", 
+                label: `Bon (${Math.floor(totalQuestions * 0.7)}+)`, 
+                color: "bg-blue-500",
+                disabled: false
+            },
+            { 
+                value: "moyen", 
+                label: `Moyen (${Math.floor(totalQuestions * 0.5)}+)`, 
+                color: "bg-yellow-500",
+                disabled: false
+            },
+            { 
+                value: "faible", 
+                label: `Faible (<${Math.floor(totalQuestions * 0.5)})`, 
+                color: "bg-red-500",
+                disabled: false
+            }
+        ];
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex flex-col md:flex-row">
@@ -202,26 +268,34 @@ const ClassementEquipesEpreuve = () => {
                                 </div>
                             </div>
 
+                            {/* CORRIGÉ : Meilleur score */}
                             <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp size={24} />
                                     <div>
                                         <div className="text-2xl font-bold">
-                                            {classement.length > 0 ? Math.max(...classement.map(e => e.score)) : 0}
+                                            {classement.length > 0 ? 
+                                                Math.max(...classement.map(e => e.score))
+                                                : '0'
+                                            }
                                         </div>
                                         <div className="text-green-100">Meilleur score</div>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* CORRIGÉ : Plus bas score */}
                             <div className="bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp size={24} className="rotate-90" />
                                     <div>
                                         <div className="text-2xl font-bold">
-                                            {classement.length > 0 ? Math.min(...classement.map(e => e.score)) : 0}
+                                            {classement.length > 0 ? 
+                                                Math.min(...classement.map(e => e.score))
+                                                : '0'
+                                            }
                                         </div>
-                                        <div className="text-gray-100">Faible score</div>
+                                        <div className="text-gray-100">Plus bas score</div>
                                     </div>
                                 </div>
                             </div>
@@ -290,26 +364,31 @@ const ClassementEquipesEpreuve = () => {
                                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Filtrer par score</h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        {[
-                                            { value: "excellent", label: "Excellent (90-100)", color: "bg-green-500" },
-                                            { value: "bon", label: "Bon (70-89)", color: "bg-blue-500" },
-                                            { value: "moyen", label: "Moyen (50-69)", color: "bg-yellow-500" },
-                                            { value: "faible", label: "Faible (<50)", color: "bg-red-500" }
-                                        ].map(filter => (
+                                        {getFilterLabels().map(filter => (
                                             <button
                                                 key={filter.value}
-                                                onClick={() => setScoreFilter(scoreFilter === filter.value ? "" : filter.value)}
+                                                onClick={() => !filter.disabled && setScoreFilter(scoreFilter === filter.value ? "" : filter.value)}
                                                 className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
-                                                    scoreFilter === filter.value
-                                                        ? "bg-white border-indigo-300 shadow-sm"
-                                                        : "bg-white border-gray-300 hover:border-gray-400"
+                                                    filter.disabled
+                                                        ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
+                                                        : scoreFilter === filter.value
+                                                        ? "bg-white border-indigo-300 shadow-sm text-gray-700"
+                                                        : "bg-white border-gray-300 hover:border-gray-400 text-gray-700"
                                                 }`}
+                                                disabled={filter.disabled}
+                                                title={filter.disabled ? "Filtre non disponible (score total manquant)" : ""}
                                             >
-                                                <div className={`w-3 h-3 rounded-full ${filter.color}`}></div>
-                                                <span className="text-sm text-gray-700">{filter.label}</span>
+                                                <div className={`w-3 h-3 rounded-full ${filter.color} ${filter.disabled ? 'opacity-50' : ''}`}></div>
+                                                <span className="text-sm">{filter.label}</span>
                                             </button>
                                         ))}
                                     </div>
+                                    {/* CORRIGÉ : Message d'information si scoreTotalPossible est 0 */}
+                                    {classement.length > 0 && getTotalQuestions(classement[0]) === 0 && (
+                                        <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+                                            Les filtres de score sont désactivés car le score total possible n'est pas défini.
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -364,10 +443,11 @@ const ClassementEquipesEpreuve = () => {
                     {!loadingClassement && !error && (
                         <div className="space-y-4">
                             {filteredClassement.length > 0 ? (
-                                filteredClassement.map((equipe) => {
-                                    const rank = classement.findIndex(e => e.id === equipe.id) + 1;
+                                filteredClassement.map((equipe, index) => {
+                                    const rank = index + 1;
                                     const medal = getMedal(rank);
                                     const MedalIcon = medal.icon;
+                                    const totalQuestions = getTotalQuestions(equipe);
 
                                     return (
                                         <div
@@ -402,24 +482,25 @@ const ClassementEquipesEpreuve = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* Score */}
+                                                        {/* CORRIGÉ : Score */}
                                                         <div className="text-right">
                                                             <div className="text-3xl font-bold text-gray-900 mb-1">
-                                                                {equipe.score} pts
+                                                                {equipe.score}
+                                                                {totalQuestions > 0 && `/${totalQuestions}`}
                                                             </div>
                                                             <div className="text-sm text-gray-500">
-                                                                Score total
+                                                                Score
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                {/* Barre de progression visuelle pour le top 3 */}
-                                                {rank <= 3 && classement.length > 1 && (
+                                                {/* CORRIGÉ : Barre de progression seulement si totalQuestions > 0 */}
+                                                {rank <= 3 && classement.length > 1 && totalQuestions && totalQuestions > 0 && (
                                                     <div className="mt-4">
                                                         <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
                                                             <span>Progression</span>
-                                                            <span>{equipe.score} pts</span>
+                                                            <span>{equipe.score}/{totalQuestions}</span>
                                                         </div>
                                                         <div className="w-full bg-gray-200 rounded-full h-2">
                                                             <div
@@ -429,7 +510,7 @@ const ClassementEquipesEpreuve = () => {
                                                                     "bg-orange-500"
                                                                 }`}
                                                                 style={{
-                                                                    width: `${(equipe.score / classement[0].score) * 100}%`
+                                                                    width: `${(equipe.score / totalQuestions) * 100}%`
                                                                 }}
                                                             ></div>
                                                         </div>

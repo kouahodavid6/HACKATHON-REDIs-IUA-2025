@@ -23,6 +23,7 @@ import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ModalEpreuve from "./components/ModalEpreuve";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../api/config";
 
 const Epreuves = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,7 +37,8 @@ const Epreuves = () => {
     const navigate = useNavigate();
 
     // Récupérer la base URL depuis l'environnement ou utiliser celle par défaut
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "https://hackaredis.msgroupe.tech";
+    // const API_BASE_URL = import.meta.env.VITE_API_URL || "https://hackaredis.msgroupe.tech";
+    const API_BASE_URL = API_URL;
 
     const { 
         epreuves, 

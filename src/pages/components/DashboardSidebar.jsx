@@ -8,8 +8,8 @@ import {
     ShieldHalf,
     FolderTree,
     FileText,
-    HelpCircle,
-    ListChecks,
+    // HelpCircle,
+    // ListChecks,
     Calendar,
     Bell,
     LogOut,
@@ -65,8 +65,16 @@ const DashboardSidebar = () => {
                     <Link to="/dashboard" className="flex items-center space-x-2">
                         {/* <Store className="h-8 w-8 text-emerald-500" /> */}
                         <div className="font-bold text-xl text-white">
-                            HackaRedis IUA
+                            <img 
+                                src="/HackaRedisLogo.png" 
+                                alt="HackaRedis Logo" 
+                                className="h-12 w-auto rounded-full"
+                            />
                         </div>
+                        <h1 className="font-bold text-xl text-white italic">
+                            {/* HackaRedis */}
+                            Bibliothèques
+                        </h1>
                     </Link>
                 </div>
 
