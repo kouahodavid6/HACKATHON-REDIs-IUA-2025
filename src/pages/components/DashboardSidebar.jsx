@@ -17,6 +17,7 @@ import {
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import ConfirmLogoutModal from '../../components/ConfirmLogoutModal';
+import LogoREDIs from "../../assets/images/HackaRedisLogo.png"
 
 const DashboardSidebar = () => {
     const location = useLocation();
@@ -66,7 +67,7 @@ const DashboardSidebar = () => {
                         {/* <Store className="h-8 w-8 text-emerald-500" /> */}
                         <div className="font-bold text-xl text-white">
                             <img 
-                                src="/HackaRedisLogo.png" 
+                                src={LogoREDIs} 
                                 alt="HackaRedis Logo" 
                                 className="h-12 w-auto rounded-full"
                             />

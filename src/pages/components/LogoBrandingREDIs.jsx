@@ -1,4 +1,4 @@
-import LogoREDIs from "../../../assets/images/LogoREDIs.jpg"
+import LogoREDIs from "../../assets/images/HackaRedisLogo.png"
 
 const LogoBrandingREDIs = () => {
     return(
@@ -11,8 +11,8 @@ const LogoBrandingREDIs = () => {
                 />
             </div>
             <div className="text-white">
-                <div className="font-bold text-lg leading-4">REDIs</div>
-                <div className="text-xs text-gray-300">Hackathon Admin</div>
+                <div className="font-bold text-lg leading-4">HackaRedis</div>
+                <div className="text-xs text-gray-300">Dashboard Admin</div>
             </div>
         </div>
     );

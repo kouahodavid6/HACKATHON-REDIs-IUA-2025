@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import Input from "../../components/Input";
-import LogoBrandingREDIs from "./components/LogoBrandingREDIs";
+import LogoBrandingREDIs from "../components/LogoBrandingREDIs";
 import useAuthAdminStore from "../../stores/auth.store";
 
 const LoginAdmin = () => {
