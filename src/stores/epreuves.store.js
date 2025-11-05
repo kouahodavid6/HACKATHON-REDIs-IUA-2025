@@ -13,7 +13,7 @@ const useEpreuveStore = create((set, get) => ({
     // Actions
     ajouterEpreuve: async (formData) => {
         set({ loading: true, error: null, success: false });
-        
+
         try {
             const response = await epreuveService.AjouterEpreuve(formData);
             
@@ -39,12 +39,14 @@ const useEpreuveStore = create((set, get) => ({
 
     listerEpreuves: async () => {
         set({ loading: true, error: null });
-        
+
         try {
             const response = await epreuveService.ListerEpreuves();
             
             const epreuvesData = response.data || response || [];
-            
+
+            console.log("Données reçues:", epreuvesData); 
+
             set({ 
                 epreuves: epreuvesData,
                 loading: false 
@@ -63,7 +65,7 @@ const useEpreuveStore = create((set, get) => ({
 
     supprimerEpreuve: async (id) => {
         set({ loading: true, error: null });
-        
+
         try {
             await epreuveService.SupprimerEpreuve(id);
             
@@ -85,7 +87,7 @@ const useEpreuveStore = create((set, get) => ({
 
     modifierEpreuve: async (id, formData) => {
         set({ loading: true, error: null, success: false });
-        
+
         try {
             const response = await epreuveService.ModifierEpreuve(id, formData);
             
@@ -114,7 +116,7 @@ const useEpreuveStore = create((set, get) => ({
 // CORRIGÉ : Action pour récupérer le classement
     getClassementEpreuve: async (idEpreuve) => {
         set({ loadingClassement: true, error: null });
-        
+
         try {
             console.log('Début de getClassementEpreuve pour:', idEpreuve);
             const response = await epreuveService.ClassementEpreuve(idEpreuve);

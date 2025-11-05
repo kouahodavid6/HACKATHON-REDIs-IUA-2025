@@ -185,24 +185,18 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
     // CORRECTION CRITIQUE: Fonction dynamique pour mapper les IDs de domaine
     const getDomaineIntegerId = (domaineUuid) => {
         if (!domaineUuid) return null;
-        
-        console.log("RECHERCHE DOMAINE AVEC UUID:", domaineUuid);
-        console.log("LISTE DES DOMAINES DISPONIBLES:", domaines);
-        
+
         // Solution 1: Chercher par UUID et utiliser l'index + 1
         const domaineIndex = domaines.findIndex(d => d.id === domaineUuid);
         
         if (domaineIndex === -1) {
-            console.error("Domaine non trouvé pour l'UUID:", domaineUuid);
             toast.error("Domaine sélectionné non valide");
             return null;
         }
-        
+
         // Utiliser l'index + 1 comme ID (car les IDs commencent à 1)
         const integerId = domaineIndex + 1;
-        
-        console.log("Mapping réussi - UUID:", domaineUuid, "-> Index:", domaineIndex, "-> ID entier:", integerId);
-        
+
         return integerId;
     };
 
@@ -223,7 +217,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             // CORRECTION: Utiliser "descritpion_epreuve" (avec la faute de frappe que l'API attend)
             formData.append('descritpion_epreuve', form.description_epreuve.trim());
             
-            formData.append('duree', parseInt(form.duree));
+            // formData.append('duree', parseInt(form.duree));
             formData.append('date_start', formatDateForAPI(form.date_start));
             formData.append('date_end', formatDateForAPI(form.date_end));
             
@@ -251,16 +245,6 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                 return;
             }
 
-            // Debug: afficher le contenu du FormData
-            console.log("=== DONNÉES ENVOYÉES ===");
-            console.log("Mode:", isEdit ? "Édition" : "Création");
-            console.log("ID Domaine string:", form.id_domaine);
-            console.log("ID Domaine integer:", domaineIntegerId);
-            console.log("Domaines disponibles:", domaines);
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}:`, value);
-            }
-
             let result;
             if (isEdit && epreuve?.id) {
                 result = await modifierEpreuve(epreuve.id, formData);
@@ -269,10 +253,10 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             }
             
             console.log("Réponse réussie:", result);
-            
+
             toast.success(isEdit ? "Épreuve modifiée avec succès !" : "Épreuve créée avec succès !");
             onSuccess();
-            
+
         } catch (error) {
             console.error("ERREUR COMPLÈTE:", error);
             
@@ -492,7 +476,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
+                                    {/* <div>
                                         <label className="block text-sm font-medium text-blue-700 mb-2">
                                             Durée (minutes) <span className="text-red-500">*</span>
                                         </label>
@@ -506,7 +490,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                             required
                                             disabled={loading}
                                         />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <label className="block text-sm font-medium text-blue-700 mb-2">
                                             Domaine <span className="text-red-500">*</span>
