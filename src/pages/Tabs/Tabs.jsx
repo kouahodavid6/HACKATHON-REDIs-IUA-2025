@@ -20,7 +20,6 @@ import {
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import ResponsiveSidebar from "../components/ResponsiveSidebar";
-import HeaderSection from "../components/HeaderSection";
 import useTabsStore from "../../stores/tabs.store";
 import useEpreuveStore from "../../stores/epreuves.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
@@ -36,8 +35,8 @@ const Tabs = () => {
     const [tabToDelete, setTabToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' ou 'list'
-    const [searchTerm, setSearchTerm] = useState(''); // Recherche par titre
+    const [viewMode, setViewMode] = useState('grid');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { 
         tabs, 
@@ -127,26 +126,6 @@ const Tabs = () => {
     const handleSuccess = () => {
         handleCloseModal();
         chargerTabs();
-    };
-
-    // Formatage de la durée
-    const formatDuree = (duree) => {
-        const heures = Math.floor(duree / 60);
-        const minutes = duree % 60;
-        
-        if (heures > 0) {
-            return `${heures}h${minutes > 0 ? `${minutes}min` : ''}`;
-        }
-        return `${minutes}min`;
-    };
-
-    // Formatage de la date
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
     };
 
     // Filtrer les tabs selon la recherche
@@ -239,13 +218,19 @@ const Tabs = () => {
                                         </p>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                                         <div className="flex items-center gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
                                             <Calendar className="text-blue-600 flex-shrink-0" size={20} />
                                             <div>
                                                 <div className="text-sm text-slate-600">Début</div>
                                                 <div className="font-semibold text-slate-900">
-                                                    {formatDate(epreuve.date_start)}
+                                                    {new Date(epreuve.date_start).toLocaleString('fr-FR', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>
@@ -254,16 +239,13 @@ const Tabs = () => {
                                             <div>
                                                 <div className="text-sm text-slate-600">Fin</div>
                                                 <div className="font-semibold text-slate-900">
-                                                    {formatDate(epreuve.date_end)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-3 bg-purple-50/50 rounded-xl border border-purple-100">
-                                            <Clock className="text-purple-600 flex-shrink-0" size={20} />
-                                            <div>
-                                                <div className="text-sm text-slate-600">Durée</div>
-                                                <div className="font-semibold text-slate-900">
-                                                    {formatDuree(parseInt(epreuve.duree))}
+                                                    {new Date(epreuve.date_end).toLocaleString('fr-FR', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
                                                 </div>
                                             </div>
                                         </div>

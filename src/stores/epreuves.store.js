@@ -16,15 +16,15 @@ const useEpreuveStore = create((set, get) => ({
 
         try {
             const response = await epreuveService.AjouterEpreuve(formData);
-            
+
             const nouvelleEpreuve = response.data || response;
-            
+
             set(state => ({ 
                 epreuves: [...state.epreuves, nouvelleEpreuve],
                 loading: false, 
                 success: true
             }));
-            
+
             return response;
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.response?.message || error.message;
@@ -45,13 +45,11 @@ const useEpreuveStore = create((set, get) => ({
             
             const epreuvesData = response.data || response || [];
 
-            console.log("Données reçues:", epreuvesData); 
-
             set({ 
                 epreuves: epreuvesData,
                 loading: false 
             });
-            
+
             return response;
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.response?.message || error.message;
@@ -74,7 +72,7 @@ const useEpreuveStore = create((set, get) => ({
                 loading: false,
                 success: true
             }));
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.response?.message || error.message;
             set({ 
@@ -100,7 +98,7 @@ const useEpreuveStore = create((set, get) => ({
                 loading: false,
                 success: true
             }));
-            
+
             return response;
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.response?.message || error.message;
@@ -118,20 +116,17 @@ const useEpreuveStore = create((set, get) => ({
         set({ loadingClassement: true, error: null });
 
         try {
-            console.log('Début de getClassementEpreuve pour:', idEpreuve);
             const response = await epreuveService.ClassementEpreuve(idEpreuve);
-            
+
             let classementData = [];
-            
+
             // CORRECTION : Basé sur votre structure API
             if (response && response.succes === true && Array.isArray(response.data)) {
                 classementData = response.data;
-                console.log('Classement chargé:', classementData.length, 'équipes');
             } else {
-                console.warn('Structure de réponse inattendue:', response);
                 classementData = [];
             }
-            
+
             set({ 
                 classement: classementData,
                 loadingClassement: false 

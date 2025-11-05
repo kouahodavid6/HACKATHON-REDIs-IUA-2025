@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Edit, Trash2, Clock, Loader, AlertCircle, RefreshCw, List, ArrowLeft, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Loader, AlertCircle, RefreshCw, List, ArrowLeft, FileText, Calendar } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import ResponsiveSidebar from "../components/ResponsiveSidebar";
-import HeaderSection from "../components/HeaderSection";
 import useQuestionsStore from "../../stores/questions.store";
 import useEpreuveStore from "../../stores/epreuves.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
@@ -46,7 +45,7 @@ const Questions = () => {
             clearError();
             await listerQuestions(idEpreuve);
         } catch (error) {
-            console.error("Erreur lors du chargement des questions:", error);
+            // Erreur gérée par le store
         }
     }, [idEpreuve, clearError, listerQuestions]);
 
@@ -87,15 +86,9 @@ const Questions = () => {
     const handleConfirmDelete = async () => {
         if (!questionToDelete) return;
         
-        console.log('🚀 Début suppression - ID Question:', questionToDelete.id);
-        console.log('📊 Questions avant suppression:', questions.map(q => q.id));
-        
         setIsDeleting(true);
         try {
-            console.log('📤 Appel à supprimerQuestion...');
             await supprimerQuestion(questionToDelete.id);
-            
-            console.log('✅ Suppression réussie dans le store');
             setDeleteModalOpen(false);
             setQuestionToDelete(null);
             toast.success("Question supprimée avec succès");
@@ -103,20 +96,8 @@ const Questions = () => {
             // Recharger les questions pour s'assurer de la synchronisation
             await chargerQuestions();
             
-            console.log('📊 Questions après rechargement:', questions.map(q => q.id));
-            
         } catch (error) {
-            console.error('❌ Erreur détaillée:', {
-                message: error.message,
-                name: error.name
-            });
-            
-            // Message d'erreur plus spécifique
-            if (error.message.includes('simulation')) {
-                toast.success("Question supprimée avec succès (mode simulation)");
-            } else {
-                toast.error(error.message || "Erreur lors de la suppression de la question");
-            }
+            toast.error(error.message || "Erreur lors de la suppression de la question");
         } finally {
             setIsDeleting(false);
         }
@@ -239,29 +220,38 @@ const Questions = () => {
                     </div>
 
                     {/* Statistiques */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
                             <div className="text-2xl font-bold text-gray-900">{questions.length}</div>
                             <div className="text-sm text-gray-600">Total questions</div>
                         </div>
-                        
+
                         {epreuve && (
                             <>
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                                    <div className="text-2xl font-bold text-gray-900">{epreuve.duree}</div>
-                                    <div className="text-sm text-gray-600">Durée (minutes)</div>
-                                </div>
-                                
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                                    <Calendar size={26} color="blue" />
                                     <div className="text-sm font-medium text-gray-900">
-                                        {new Date(epreuve.date_start).toLocaleDateString('fr-FR')}
+                                        {new Date(epreuve.date_start).toLocaleString('fr-FR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
                                     </div>
                                     <div className="text-sm text-gray-600">Date de début</div>
                                 </div>
-                                
+
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                                    <Calendar size={26} color="blue" />
                                     <div className="text-sm font-medium text-gray-900">
-                                        {new Date(epreuve.date_end).toLocaleDateString('fr-FR')}
+                                        {new Date(epreuve.date_end).toLocaleString('fr-FR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
                                     </div>
                                     <div className="text-sm text-gray-600">Date de fin</div>
                                 </div>
@@ -329,7 +319,6 @@ const Questions = () => {
                                                     </div>
                                                     
                                                     <div className="flex items-center gap-2">
-                                                        <Clock size={16} />
                                                         <span>Temps: </span>
                                                         <span className="font-medium text-green-600">
                                                             {question.time_in_seconds} secondes
