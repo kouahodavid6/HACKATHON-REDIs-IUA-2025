@@ -35,7 +35,6 @@ const ModalDomaine = ({ isOpen, onClose, onSuccess, domaine, isEdit = false }) =
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting form with titre:', titre);
         
         if (!titre.trim()) {
             toast.error("Le nom du domaine est requis");
@@ -44,11 +43,9 @@ const ModalDomaine = ({ isOpen, onClose, onSuccess, domaine, isEdit = false }) =
 
         try {
             if (isEdit && domaine) {
-                console.log('Editing domaine:', domaine.id, 'with titre:', titre);
                 await modifierDomaine(domaine.id, titre.trim());
                 toast.success("Domaine modifié avec succès !");
             } else {
-                console.log('Adding new domaine with titre:', titre);
                 await ajouterDomaine(titre.trim());
                 toast.success("Domaine créé avec succès !");
             }
@@ -61,12 +58,10 @@ const ModalDomaine = ({ isOpen, onClose, onSuccess, domaine, isEdit = false }) =
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Une erreur est survenue";
             toast.error(errorMessage);
-            console.error("Erreur dans le modal:", error);
         }
     };
 
     const handleClose = () => {
-        console.log('Modal close button clicked');
         onClose();
     };
 

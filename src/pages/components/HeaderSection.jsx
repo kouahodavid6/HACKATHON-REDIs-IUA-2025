@@ -6,7 +6,7 @@ const HeaderSection = ({
     subtitle,
     buttonLabel,
     onButtonClick,
-    icon: Icon = Plus, // Par défaut l’icône Plus
+    icon: Icon = Plus,
     buttonColor = "bg-blue-600 hover:bg-blue-700",
 }) => {
     return (
@@ -45,8 +45,8 @@ HeaderSection.propTypes = {
     subtitle: PropTypes.string,
     buttonLabel: PropTypes.string,
     onButtonClick: PropTypes.func,
-    icon: PropTypes.elementType, // Pour passer un composant d’icône
-    buttonColor: PropTypes.string, // Pour personnaliser la couleur du bouton
+    icon: PropTypes.elementType,
+    buttonColor: PropTypes.string,
 };
 
 export default HeaderSection;

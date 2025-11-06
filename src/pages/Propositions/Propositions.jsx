@@ -43,7 +43,6 @@ const Propositions = () => {
             clearError();
             await listerPropositions(idQuestion);
         } catch (error) {
-            console.error("Erreur lors du chargement des propositions:", error);
         }
     }, [idQuestion, clearError, listerPropositions]);
 
@@ -83,29 +82,15 @@ const Propositions = () => {
 
     const handleConfirmDelete = async () => {
         if (!propositionToDelete) return;
-        
-        console.log('🚀 Début suppression - ID Proposition:', propositionToDelete.id);
-        console.log('📊 Propositions avant suppression:', propositions.map(p => p.id));
-        
+
         setIsDeleting(true);
         try {
-            console.log('📤 Appel à supprimerProposition...');
             await supprimerProposition(propositionToDelete.id);
-            
-            console.log('✅ Suppression réussie dans le store');
+
             setDeleteModalOpen(false);
             setPropositionToDelete(null);
             toast.success("Proposition supprimée avec succès");
-            
-            // Pas besoin de recharger - l'état local est déjà mis à jour
-            console.log('📊 Propositions après suppression (état local):', propositions.map(p => p.id));
-            
         } catch (error) {
-            console.error('❌ Erreur détaillée:', {
-                message: error.message,
-                name: error.name
-            });
-            
             toast.error(error.message || "Erreur lors de la suppression de la proposition");
         } finally {
             setIsDeleting(false);

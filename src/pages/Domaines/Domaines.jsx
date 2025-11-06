@@ -43,7 +43,6 @@ const Domaines = () => {
     }, [listerDomaines]);
 
     const handleAdd = () => {
-        console.log('Opening modal for add');
         setCurrentDomaine(null);
         setIsEditMode(false);
         setIsModalOpen(true);
@@ -52,7 +51,6 @@ const Domaines = () => {
     };
 
     const handleEdit = (domaine) => {
-        console.log('Opening modal for edit:', domaine);
         setCurrentDomaine(domaine);
         setIsEditMode(true);
         setIsModalOpen(true);
@@ -61,7 +59,6 @@ const Domaines = () => {
     };
 
     const handleDeleteClick = (domaine) => {
-        console.log('Opening delete modal for:', domaine);
         setDomaineToDelete(domaine);
         setDeleteModalOpen(true);
     };
@@ -78,7 +75,6 @@ const Domaines = () => {
             setDomaineToDelete(null);
             toast.success("Domaine supprimer avec succès !");
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
         } finally {
             setIsDeleting(false);
         }
@@ -91,7 +87,6 @@ const Domaines = () => {
     };
 
     const handleCloseModal = () => {
-        console.log('Closing modal');
         setIsModalOpen(false);
         setCurrentDomaine(null);
         setIsEditMode(false);

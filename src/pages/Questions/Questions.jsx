@@ -132,7 +132,6 @@ const Questions = () => {
         const types = {
             'unique': 'Choix unique',
             'multiple': 'Choix multiple',
-            'texte': 'Réponse texte'
         };
         return types[type] || type;
     };

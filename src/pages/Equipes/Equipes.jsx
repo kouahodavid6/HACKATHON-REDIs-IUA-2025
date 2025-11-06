@@ -43,22 +43,12 @@ const Equipes = () => {
                     listerEtudiants()
                 ]);
             } catch (error) {
-                console.error("Erreur lors du chargement des données:", error);
+
             }
         };
 
         chargerDonnees();
     }, [listerEquipes, listerEtudiants]);
-
-    // Debug séparé pour éviter les boucles infinies
-    useEffect(() => {
-        if (equipes.length > 0) {
-            console.log("Équipes chargées:", equipes);
-        }
-        if (etudiants.length > 0) {
-            console.log("Étudiants chargés:", etudiants);
-        }
-    }, [equipes, etudiants]);
 
     // ✅ Fonction pour obtenir les membres d'une équipe
     const getMembresEquipe = (equipeId) => {
@@ -103,7 +93,6 @@ const Equipes = () => {
             setEquipeToDelete(null);
             toast.success("Équipe supprimée avec succès");
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression de l'équipe");
         } finally {
             setIsDeleting(false);

@@ -49,7 +49,6 @@ const Programmes = () => {
         try {
             await listerProgrammes();
         } catch (error) {
-            console.error("Erreur lors du chargement des programmes:", error);
             toast.error("Erreur lors du chargement des programmes");
         }
     }, [listerProgrammes]);
@@ -89,7 +88,6 @@ const Programmes = () => {
             toast.success("Programme supprimé avec succès");
             await chargerProgrammes();
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression du programme");
         } finally {
             setIsDeleting(false);

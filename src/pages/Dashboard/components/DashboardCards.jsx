@@ -28,13 +28,13 @@ const DashboardCards = () => {
                     listerEpreuves()
                 ]);
             } catch (error) {
-                console.error("Erreur lors du chargement des données:", error);
+
             }
         };
 
         chargerDonnees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // ✅ Désactivation ESLint pour cette ligne
+    }, []);
 
     const statsEtudiants = getStatistiques();
     const nombreEquipes = getNombreEquipes();

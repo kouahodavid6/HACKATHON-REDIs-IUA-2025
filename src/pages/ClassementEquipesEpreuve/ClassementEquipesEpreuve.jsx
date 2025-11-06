@@ -43,14 +43,6 @@ const ClassementEquipesEpreuve = () => {
     // Récupérer les informations de l'épreuve
     const epreuve = getEpreuveById(idEpreuve);
 
-    // DEBUG : Afficher les données du classement
-    useEffect(() => {
-        console.log('Données du classement:', classement);
-        if (classement.length > 0) {
-            console.log('Première équipe:', classement[0]);
-        }
-    }, [classement]);
-
     // Charger le classement
     const chargerClassement = useCallback(async () => {
         if (!idEpreuve) return;
@@ -59,7 +51,6 @@ const ClassementEquipesEpreuve = () => {
             clearError();
             await getClassementEpreuve(idEpreuve);
         } catch (error) {
-            console.error("Erreur lors du chargement du classement:", error);
             toast.error("Erreur lors du chargement du classement");
         }
     }, [idEpreuve, clearError, getClassementEpreuve]);
@@ -106,11 +97,9 @@ const ClassementEquipesEpreuve = () => {
         });
     };
 
-    // CORRIGÉ : Fonction utilitaire pour obtenir le nombre total de questions
+    // Fonction utilitaire pour obtenir le nombre total de questions
     const getTotalQuestions = (equipe) => {
-        // CORRECTION : Utiliser scoreTotalPossible depuis votre API
         const total = equipe.scoreTotalPossible;
-        console.log(`Équipe ${equipe.team_name}: score=${equipe.score}, totalPossible=${total}`);
         return total;
     };
 
@@ -159,12 +148,12 @@ const ClassementEquipesEpreuve = () => {
     const resultsCount = filteredClassement.length;
     const totalCount = classement.length;
 
-    // CORRIGÉ : Obtenir les labels des filtres
+    // Obtenir les labels des filtres
     const getFilterLabels = () => {
         const firstTeam = classement[0];
         const totalQuestions = firstTeam ? getTotalQuestions(firstTeam) : null;
         
-        // CORRECTION : Si scoreTotalPossible est 0, désactiver les filtres basés sur le score
+        // Si scoreTotalPossible est 0, désactiver les filtres basés sur le score
         if (!totalQuestions || totalQuestions === 0) {
             return [
                 { value: "excellent", label: "Excellent", color: "bg-green-500", disabled: true },
@@ -268,7 +257,7 @@ const ClassementEquipesEpreuve = () => {
                                 </div>
                             </div>
 
-                            {/* CORRIGÉ : Meilleur score */}
+                            {/* Meilleur score */}
                             <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp size={24} />
@@ -284,7 +273,7 @@ const ClassementEquipesEpreuve = () => {
                                 </div>
                             </div>
 
-                            {/* CORRIGÉ : Plus bas score */}
+                            {/* Plus bas score */}
                             <div className="bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl p-4 shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <TrendingUp size={24} className="rotate-90" />
@@ -383,7 +372,7 @@ const ClassementEquipesEpreuve = () => {
                                             </button>
                                         ))}
                                     </div>
-                                    {/* CORRIGÉ : Message d'information si scoreTotalPossible est 0 */}
+                                    {/* Message d'information si scoreTotalPossible est 0 */}
                                     {classement.length > 0 && getTotalQuestions(classement[0]) === 0 && (
                                         <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
                                             Les filtres de score sont désactivés car le score total possible n'est pas défini.
@@ -482,7 +471,7 @@ const ClassementEquipesEpreuve = () => {
                                                             </div>
                                                         </div>
 
-                                                        {/* CORRIGÉ : Score */}
+                                                        {/* Score */}
                                                         <div className="text-right">
                                                             <div className="text-3xl font-bold text-gray-900 mb-1">
                                                                 {equipe.score}
@@ -495,7 +484,7 @@ const ClassementEquipesEpreuve = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* CORRIGÉ : Barre de progression seulement si totalQuestions > 0 */}
+                                                {/* Barre de progression seulement si totalQuestions > 0 */}
                                                 {rank <= 3 && classement.length > 1 && totalQuestions && totalQuestions > 0 && (
                                                     <div className="mt-4">
                                                         <div className="flex items-center justify-between text-sm text-gray-600 mb-1">

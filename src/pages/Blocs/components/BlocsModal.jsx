@@ -82,32 +82,32 @@ const BlocsModal = ({
 
     // Exemples de code par défaut
     const defaultHTML = `<!DOCTYPE html>
-<html>
-<head>
-    <title>Mon Bloc</title>
-</head>
-<body>
-    <h1>Bienvenue !</h1>
-    <p>Ceci est un exemple de contenu HTML.</p>
-</body>
-</html>`;
+    <html>
+        <head>
+            <title>Mon Bloc</title>
+        </head>
+        <body>
+            <h1>Bienvenue !</h1>
+            <p>Ceci est un exemple de contenu HTML.</p>
+        </body>
+    </html>`;
 
     const defaultCSS = `body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f5f5f5;
-}
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
 
-h1 {
-    color: #333;
-    text-align: center;
-}
+    h1 {
+        color: #333;
+        text-align: center;
+    }
 
-p {
-    color: #666;
-    line-height: 1.6;
-}`;
+    p {
+        color: #666;
+        line-height: 1.6;
+    }`;
 
     const handleTabChange = (tab) => {
         setActiveTab(tab);

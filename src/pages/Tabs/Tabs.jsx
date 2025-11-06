@@ -5,8 +5,7 @@ import {
     Edit, 
     Trash2, 
     ArrowLeft, 
-    FolderOpen, 
-    Clock, 
+    FolderOpen,
     Calendar,
     Users,
     AlertCircle,
@@ -58,7 +57,6 @@ const Tabs = () => {
         try {
             await listerTabs(idEpreuve);
         } catch (error) {
-            console.error("Erreur lors du chargement des tabs:", error);
             toast.error("Erreur lors du chargement des tabs");
         }
     }, [idEpreuve, listerTabs]);
@@ -104,7 +102,6 @@ const Tabs = () => {
             setTabToDelete(null);
             toast.success("Tab supprimé avec succès");
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression du tab");
         } finally {
             setIsDeleting(false);

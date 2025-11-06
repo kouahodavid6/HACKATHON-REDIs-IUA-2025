@@ -47,8 +47,7 @@ const ProgrammeModal = ({
             }
             onSuccess();
         } catch (error) {
-            console.error("Erreur:", error);
-            // L'erreur est gérée par le store
+
         } finally {
             setLoading(false);
         }

@@ -98,25 +98,18 @@ const QuestionsModal = ({
             return;
         }
 
-        console.log('Données à envoyer:', formData);
-        console.log('Mode édition:', isEdit);
-
         setIsSubmitting(true);
         try {
             if (isEdit) {
-                console.log('Tentative de modification...');
-                // CORRECTION : Appel correct avec seulement l'ID de la question et les données
                 await modifierQuestion(question.id, formData);
                 toast.success('Question modifiée avec succès');
             } else {
-                console.log('Tentative de création...');
                 await creerQuestion(epreuveId, formData);
                 toast.success('Question créée avec succès');
             }
             onSuccess();
         } catch (error) {
-            console.error('Erreur détaillée lors de la sauvegarde:', error);
-            // Le toast d'erreur est géré par le store
+
         } finally {
             setIsSubmitting(false);
         }

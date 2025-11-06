@@ -1,6 +1,5 @@
 import { 
-    Menu, 
-    Bell, 
+    Menu,
     UserSquareIcon
 } from 'lucide-react';
 import { motion } from 'framer-motion';

@@ -84,25 +84,18 @@ const PropositionsModal = ({
             return;
         }
 
-        console.log('Données à envoyer:', formData);
-        console.log('Mode édition:', isEdit);
-
         setIsSubmitting(true);
         try {
             if (isEdit) {
-                console.log('Tentative de modification...');
-                // CORRECTION : Appel correct avec seulement l'ID de la proposition et les données
                 await modifierProposition(proposition.id, formData);
                 toast.success('Proposition modifiée avec succès');
             } else {
-                console.log('Tentative de création...');
                 await creerProposition(questionId, formData);
                 toast.success('Proposition créée avec succès');
             }
             onSuccess();
         } catch (error) {
-            console.error('Erreur détaillée lors de la sauvegarde:', error);
-            // Le toast d'erreur est géré par le store
+
         } finally {
             setIsSubmitting(false);
         }

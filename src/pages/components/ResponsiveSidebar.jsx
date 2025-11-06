@@ -24,7 +24,6 @@ const ResponsiveSidebar = ({
                     ${isOpen ? "translate-x-0" : "-translate-x-full"}
                     md:translate-x-0 ${width} h-screen bg-white shadow-lg`}
             >
-                {/* Contenu injecté */}
                 {children}
             </div>
 

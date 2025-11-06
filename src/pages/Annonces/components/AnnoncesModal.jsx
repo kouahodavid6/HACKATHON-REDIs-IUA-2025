@@ -24,7 +24,6 @@ const AnnoncesModal = ({
             if (isEdit && annonce) {
                 setLibelleAnnonce(annonce.libelle_annonce || "");
                 setDescription(annonce.description || "");
-                // Formater la date pour l'input date
                 if (annonce.date_annonce) {
                     const date = new Date(annonce.date_annonce);
                     const formattedDate = date.toISOString().split('T')[0];
@@ -77,7 +76,6 @@ const AnnoncesModal = ({
             onSuccess();
         } catch (error) {
             console.error("Erreur:", error);
-            // L'erreur est gérée par le store
         } finally {
             setLoading(false);
         }

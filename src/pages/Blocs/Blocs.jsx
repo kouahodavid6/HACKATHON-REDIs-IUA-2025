@@ -57,7 +57,6 @@ const Blocs = () => {
         try {
             await listerBlocs(idTab);
         } catch (error) {
-            console.error("Erreur lors du chargement des blocs:", error);
             toast.error("Erreur lors du chargement des blocs");
         }
     }, [idTab, listerBlocs]);
@@ -68,7 +67,7 @@ const Blocs = () => {
             try {
                 await listerTabs(tab.id_epreuve);
             } catch (error) {
-                console.error("Erreur lors du chargement des tabs:", error);
+                toast.error("Erreur lors du chargement des blocs");
             }
         }
     }, [tabs.length, listerTabs, tab?.id_epreuve]);
@@ -117,7 +116,6 @@ const Blocs = () => {
             // Recharger les blocs pour voir les changements immédiatement
             await chargerBlocs();
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression du bloc");
         } finally {
             setIsDeleting(false);

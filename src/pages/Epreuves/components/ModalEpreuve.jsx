@@ -14,11 +14,11 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         date_end: "",
         id_domaine: "",
         url_image: null,
-        existingImageUrl: null // NOUVEAU: pour stocker l'URL de l'image existante
+        existingImageUrl: null
     });
     const [tagInput, setTagInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [imagePreview, setImagePreview] = useState(null); // NOUVEAU: pour l'aperçu de l'image
+    const [imagePreview, setImagePreview] = useState(null);
     
     const { ajouterEpreuve, modifierEpreuve } = useEpreuveStore();
     const { domaines, listerDomaines } = useDomaineStore();
@@ -39,7 +39,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             try {
                 await listerDomaines();
             } catch (error) {
-                console.error("Erreur lors du chargement des domaines:", error);
+
             }
         };
 
@@ -57,7 +57,6 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             const adjustedDate = new Date(date.getTime() - timezoneOffset);
             return adjustedDate.toISOString().slice(0, 16);
         } catch (error) {
-            console.error("Erreur de formatage de date:", error);
             return "";
         }
     }, []);
@@ -83,11 +82,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
     // CORRECTION: Initialiser le formulaire avec les bonnes valeurs
     useEffect(() => {
         if (epreuve && isOpen) {
-            console.log("Épreuve à modifier:", epreuve);
-            console.log("Domaines disponibles:", domaines);
-            
             const domaineId = getDomaineIdFromUuid(epreuve.id_domaine || epreuve.domaine_name);
-            console.log("Domaine ID trouvé:", domaineId);
 
             setForm({
                 titre: epreuve.titre || "",
@@ -243,7 +238,6 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         const domaineIndex = domaines.findIndex(d => d.id === domaineUuid);
         
         if (domaineIndex === -1) {
-            console.warn("Domaine non trouvé, utilisation de l'UUID comme fallback:", domaineUuid);
             // Fallback: essayer de parser l'UUID comme entier si possible
             return parseInt(domaineUuid) || 1;
         }

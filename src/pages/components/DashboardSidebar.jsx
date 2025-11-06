@@ -8,8 +8,6 @@ import {
     ShieldHalf,
     FolderTree,
     FileText,
-    // HelpCircle,
-    // ListChecks,
     Calendar,
     Bell,
     LogOut,

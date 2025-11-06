@@ -6,7 +6,6 @@ import {
     Trash2, 
     ArrowLeft, 
     Clock,
-    Calendar,
     AlertCircle,
     Loader2,
     Grid3X3,
@@ -69,7 +68,6 @@ const SousProgrammes = () => {
         try {
             await listerSousProgrammes();
         } catch (error) {
-            console.error("Erreur lors du chargement des sous-programmes:", error);
             toast.error("Erreur lors du chargement des sous-programmes");
         }
     }, [listerSousProgrammes]);
@@ -128,7 +126,6 @@ const SousProgrammes = () => {
             toast.success("Sous-programme supprimé avec succès");
             await chargerSousProgrammes();
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression du sous-programme");
         } finally {
             setIsDeleting(false);
@@ -163,18 +160,6 @@ const SousProgrammes = () => {
         setSearchTerm('');
     };
 
-    // Formatage de la date
-    const formatDate = (dateString) => {
-        if (!dateString) return 'Date non définie';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-amber-50/20 flex flex-col md:flex-row">
