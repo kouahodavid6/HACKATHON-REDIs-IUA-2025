@@ -15,20 +15,21 @@ const useEtudiantStore = create((set, get) => ({
         
         try {
             const response = await etudiantService.ListerEtudiant();
-            
-            // ✅ Accéder aux données via response.data
+
             set({ 
                 etudiants: response.data || [],
                 loading: false 
             });
-            
+
             return response;
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message;
+
             set({ 
                 error: errorMessage, 
                 loading: false 
             });
+
             throw error;
         }
     },
@@ -38,20 +39,20 @@ const useEtudiantStore = create((set, get) => ({
         
         try {
             await etudiantService.SupprimerEtudiant(id);
-            
-            // Mettre à jour la liste localement
+
             set(state => ({
                 etudiants: state.etudiants.filter(etudiant => etudiant.id !== id),
                 loading: false,
                 success: true
             }));
-            
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message;
+
             set({ 
                 error: errorMessage, 
                 loading: false 
             });
+
             throw error;
         }
     },

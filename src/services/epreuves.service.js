@@ -1,42 +1,62 @@
 import axiosInstance from "../api/axiosInstance";
 
 const AjouterEpreuve = async (formData) => {
-    const response = await axiosInstance.post("/api/StoreEpreuve", formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-    
-    return response.data;
+    try {
+        const response = await axiosInstance.post("/api/StoreEpreuve", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erreur lors de l'ajout de l'épreuve");
+    }
 }
 
 const ListerEpreuves = async () => {
-    const response = await axiosInstance.get("/api/ListEpreuve/Admin");
-    return response.data;
+    try {
+        const response = await axiosInstance.get("/api/ListEpreuve/Admin");
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erreur lors du chargement des épreuves");
+    }
 }
 
 const ModifierEpreuve = async (id, formData) => {
-    const response = await axiosInstance.post(`/api/UpdateEpreuve/${id}`, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+    try {
+        const response = await axiosInstance.post(`/api/UpdateEpreuve/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
 
-    return response.data;
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erreur lors de la modification de l'épreuve");
+    }
 }
 
 const SupprimerEpreuve = async (id) => {
-    const response = await axiosInstance.post(`/api/DeleteEpreuve/${id}`);
-    return response.data;
+    try {
+        const response = await axiosInstance.post(`/api/DeleteEpreuve/${id}`);
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erreur lors de la suppression de l'épreuve");
+    }
 }
 
 const ClassementEpreuve = async (idEpreuve) => {
-    const response = await axiosInstance.get(`/api/ClassementEpreuve/${idEpreuve}`);
+    try {
+        const response = await axiosInstance.get(`/api/ClassementEpreuve/${idEpreuve}`);
 
-    if (response.data && response.data.succes === true) {
-        return response.data;
-    } else {
-        throw new Error("Structure de réponse invalide");
+        if (response.data && response.data.succes === true) {
+            return response.data;
+        } else {
+            throw new Error("Structure de réponse invalide");
+        }
+    } catch (error) {
+        throw new Error(error.response?.data?.message || "Erreur lors du chargement du classement de l'épreuve");
     }
 }
 

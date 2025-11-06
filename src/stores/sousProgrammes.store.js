@@ -12,6 +12,7 @@ const useSousProgrammesStore = create((set) => ({
 
         try {
             const response = await sousProgrammesService.creerSousProgramme(idProgramme, data);
+
             const newSousProgramme = response.data;
 
             set(state => ({
@@ -25,6 +26,7 @@ const useSousProgrammesStore = create((set) => ({
                 error: error.message, 
                 loading: false 
             });
+
             throw error;
         }
     },
@@ -34,6 +36,7 @@ const useSousProgrammesStore = create((set) => ({
 
         try {
             const response = await sousProgrammesService.listerSousProgrammes();
+
             const listSousProgrammes = response.data;
 
             set({ 
@@ -47,6 +50,7 @@ const useSousProgrammesStore = create((set) => ({
                 error: error.message, 
                 loading: false 
             });
+
             throw error;
         }
     },
@@ -56,6 +60,7 @@ const useSousProgrammesStore = create((set) => ({
 
         try {
             const response = await sousProgrammesService.modifierSousProgramme(idSousProgramme, data);
+
             const updateSousProgramme = response.data;
 
             set(state => ({ 
@@ -71,6 +76,7 @@ const useSousProgrammesStore = create((set) => ({
                 error: error.message, 
                 loading: false 
             });
+
             throw error;
         }
     },
@@ -92,6 +98,7 @@ const useSousProgrammesStore = create((set) => ({
                 error: error.message, 
                 loading: false 
             });
+
             throw error;
         }
     },

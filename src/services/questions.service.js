@@ -7,6 +7,7 @@ const creerQuestion = async (idEpreuve, questionData) => {
             type: questionData.type,
             time_in_seconds: questionData.time_in_seconds
         });
+
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors de la création de la question');
@@ -16,6 +17,7 @@ const creerQuestion = async (idEpreuve, questionData) => {
 const listerQuestions = async (idEpreuve) => {
     try {
         const response = await axiosInstance.get(`/api/ListQuestions/${idEpreuve}`);
+
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors du chargement des questions');
@@ -29,6 +31,7 @@ const modifierQuestion = async (idQuestion, questionData) => {
             type: questionData.type,
             time_in_seconds: questionData.time_in_seconds
         });
+
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors de la modification de la question');
@@ -38,6 +41,7 @@ const modifierQuestion = async (idQuestion, questionData) => {
 const supprimerQuestion = async (idQuestion) => {
     try {
         const response = await axiosInstance.post(`/api/DeleteQuestions/${idQuestion}`);
+
         return response.data;
     } catch (error) {
         throw new Error(error.response?.data?.message || 'Erreur lors de la suppression de la question');

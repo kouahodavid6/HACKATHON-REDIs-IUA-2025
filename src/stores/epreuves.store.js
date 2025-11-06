@@ -120,7 +120,7 @@ const useEpreuveStore = create((set, get) => ({
 
             let classementData = [];
 
-            // CORRECTION : Basé sur votre structure API
+
             if (response && response.succes === true && Array.isArray(response.data)) {
                 classementData = response.data;
             } else {
@@ -131,15 +131,16 @@ const useEpreuveStore = create((set, get) => ({
                 classement: classementData,
                 loadingClassement: false 
             });
-            
+
             return classementData;
         } catch (error) {
-            console.error('Erreur dans getClassementEpreuve:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Erreur lors du chargement du classement';
+
             set({ 
                 error: errorMessage, 
                 loadingClassement: false 
             });
+
             throw error;
         }
     },
@@ -149,7 +150,7 @@ const useEpreuveStore = create((set, get) => ({
 
     // Gestion de l'épreuve sélectionnée
     setCurrentEpreuve: (epreuve) => set({ currentEpreuve: epreuve }),
-    
+
     // Rechercher une épreuve par ID
     getEpreuveById: (id) => {
         const { epreuves } = get();

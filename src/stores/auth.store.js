@@ -49,8 +49,7 @@ const useAuthAdminStore = create((set, get) => ({
         set({ loading: true, error: null });
         try {
             const response = await authAdminService.registerAdmin(data);
-            
-            // ✅ CORRECTION : Accéder aux données via response.data
+
             const userData = { 
                 id: response.data.id, 
                 email: response.data.email 
@@ -60,7 +59,7 @@ const useAuthAdminStore = create((set, get) => ({
             set({ loading: false });
             return response;
         } catch (error) {
-            // ✅ CORRECTION : Gérer le nouveau format d'erreur
+
             const errorMessage = error.response?.data?.message || error.message;
             set({ error: errorMessage, showError: true, loading: false });
             throw error;
@@ -71,8 +70,7 @@ const useAuthAdminStore = create((set, get) => ({
         set({ loading: true, error: null });
         try {
             const response = await authAdminService.loginAdmin(credentials);
-            
-            // ✅ CORRECTION : Accéder aux données via response.data
+
             const userData = { 
                 id: response.data.id, 
                 email: response.data.email 
@@ -82,7 +80,7 @@ const useAuthAdminStore = create((set, get) => ({
             set({ loading: false });
             return response;
         } catch (error) {
-            // ✅ CORRECTION : Gérer le nouveau format d'erreur
+
             const errorMessage = error.response?.data?.message || error.message;
             set({ error: errorMessage, showError: true, loading: false });
             throw error;

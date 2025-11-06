@@ -12,9 +12,9 @@ const useTabsStore = create((set) => ({
 
         try {
             const response = await TabsService.creerTab(idEpreuve, titre);
+
             const newTab = response.data;
 
-            // Ajouter le nouveau tab à la liste
             set(state => ({
                 tabs: [...state.tabs, newTab],
                 loading: false
@@ -26,6 +26,7 @@ const useTabsStore = create((set) => ({
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -35,9 +36,9 @@ const useTabsStore = create((set) => ({
 
         try {
             const response = await TabsService.listerTabs(idEpreuve);
+
             const listTabs = response.data;
 
-            // Lister les tabs d'une épreuve
             set({ 
                 tabs: listTabs || [],
                 loading: false
@@ -49,6 +50,7 @@ const useTabsStore = create((set) => ({
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -58,9 +60,9 @@ const useTabsStore = create((set) => ({
 
         try {
             const response = await TabsService.modifierTab(idTab, titre);
+
             const updateTab = response.data;
 
-            // Mettre à jour le tab dans la liste
             set(state => ({ 
                 tabs: state.tabs.map(tab =>
                     tab.id === idTab ? updateTab: tab
@@ -74,6 +76,7 @@ const useTabsStore = create((set) => ({
                 error: error.message,
                 loading: false
             });
+
             throw error;
         }
     },
@@ -84,7 +87,6 @@ const useTabsStore = create((set) => ({
         try {
             await TabsService.supprimerTab(idTab);
 
-            // Retirer le tab de la liste
             set(state => ({
                 tabs: state.tabs.filter(tab => tab.id !== idTab),
                 loading: false
@@ -96,6 +98,7 @@ const useTabsStore = create((set) => ({
                 error: error.message,
                 loading: false
             });
+
             throw error;
         }
     },

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { propositionsService } from "../services/propositions.service";
 
-const usePropositionsStore = create((set, get) => ({
+const usePropositionsStore = create((set) => ({
     propositions: [],
     loading: false,
     error: null,
@@ -12,7 +12,7 @@ const usePropositionsStore = create((set, get) => ({
 
         try {
             const response = await propositionsService.creerProposition(idQuestion, propositionData);
-            
+
             if (response.succes) {
                 const newProposition = response.data;
 
@@ -30,6 +30,7 @@ const usePropositionsStore = create((set, get) => ({
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -39,7 +40,7 @@ const usePropositionsStore = create((set, get) => ({
 
         try {
             const response = await propositionsService.listerPropositions(idQuestion);
-            
+
             if (response.succes) {
                 const listPropositions = response.data || [];
 
@@ -57,6 +58,7 @@ const usePropositionsStore = create((set, get) => ({
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -86,6 +88,7 @@ const usePropositionsStore = create((set, get) => ({
                 error: error.message,
                 loading: false
             });
+
             throw error;
         }
     },
@@ -94,18 +97,13 @@ const usePropositionsStore = create((set, get) => ({
         set({ loading: true, error: null });
 
         try {
-            console.log('🗑️ Store: Suppression proposition ID:', idProposition);
-            console.log('📋 Propositions avant suppression:', get().propositions.map(p => p.id));
-            
             const response = await propositionsService.supprimerProposition(idProposition);
-            
-            console.log('✅ Store: Réponse suppression reçue', response);
-            
+
             if (response.succes !== false) {
-                // Mise à jour IMMÉDIATE de l'état local
+
                 set(state => {
                     const newPropositions = state.propositions.filter(proposition => proposition.id !== idProposition);
-                    console.log('🔄 Store: Propositions après suppression:', newPropositions.map(p => p.id));
+
                     return {
                         propositions: newPropositions,
                         loading: false
@@ -117,11 +115,11 @@ const usePropositionsStore = create((set, get) => ({
                 throw new Error(response.message || 'Suppression échouée côté serveur');
             }
         } catch (error) {
-            console.error('❌ Store: Erreur lors de la suppression', error);
             set({ 
                 error: error.message,
                 loading: false
             });
+
             throw error;
         }
     },

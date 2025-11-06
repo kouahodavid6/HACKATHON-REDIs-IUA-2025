@@ -8,7 +8,7 @@ const useBlocsStore = create((set) => ({
     currentBloc: null,
 
     creerBloc: async (idTab, data) => {
-        set({ loading: true, error: null }); // CORRECTION: "loadimg" → "loading"
+        set({ loading: true, error: null });
 
         try {
             const response = await blocsService.creerBloc(idTab, data);
@@ -60,7 +60,7 @@ const useBlocsStore = create((set) => ({
 
             set(state => ({ 
                 blocs: state.blocs.map(bloc =>
-                    bloc.id === idBloc ? updateBloc : bloc // CORRECTION: "updateBloc:" → "updateBloc :"
+                    bloc.id === idBloc ? updateBloc : bloc
                 ),
                 loading: false
             }));
@@ -82,7 +82,7 @@ const useBlocsStore = create((set) => ({
             await blocsService.supprimerBloc(idBloc);
 
             set(state => ({
-                blocs: state.blocs.filter(bloc => bloc.id !== idBloc), // CORRECTION: "tblocs" → "blocs"
+                blocs: state.blocs.filter(bloc => bloc.id !== idBloc),
                 loading: false
             }));
 

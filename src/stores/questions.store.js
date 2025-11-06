@@ -23,13 +23,14 @@ const useQuestionsStore = create((set) => ({
 
                 return newQuestion;
             } else {
-                throw new Error(response.message || 'Erreur lors de la création');
+                throw new Error(response.message || "Erreur lors de la création de la question");
             }
         } catch (error) {
             set({ 
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -50,13 +51,14 @@ const useQuestionsStore = create((set) => ({
 
                 return listQuestions;
             } else {
-                throw new Error(response.message || 'Erreur lors du chargement');
+                throw new Error(response.message || "Erreur lors du chargement des questions");
             }
         } catch (error) {
             set({ 
                 error: error.message,
                 loading: false,
             });
+
             throw error;
         }
     },
@@ -79,13 +81,14 @@ const useQuestionsStore = create((set) => ({
 
                 return updatedQuestion;
             } else {
-                throw new Error(response.message || 'Erreur lors de la modification');
+                throw new Error(response.message || "Erreur lors de la suppression de la question");
             }
         } catch (error) {
             set({ 
                 error: error.message,
                 loading: false
             });
+
             throw error;
         }
     },
@@ -101,10 +104,10 @@ const useQuestionsStore = create((set) => ({
                     questions: state.questions.filter(q => q.id !== idQuestion),
                     loading: false
                 }));
-                
+
                 return true;
             } else {
-                throw new Error(response.message || 'Suppression échouée côté serveur');
+                throw new Error(response.message || "Erreur lors de la suppression de la question'");
             }
             
         } catch (error) {
@@ -112,7 +115,7 @@ const useQuestionsStore = create((set) => ({
                 error: error.message,
                 loading: false
             });
-            
+
             throw error;
         }
     },

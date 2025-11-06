@@ -11,23 +11,24 @@ const useEquipeStore = create((set, get) => ({
     // Actions
     listerEquipes: async () => {
         set({ loading: true, error: null });
-        
+
         try {
             const response = await EquipeService.ListerEquipe();
-            
-            // ✅ CORRECTION : response.data?.Liste_equipe
+
             set({ 
                 equipes: response.data?.Liste_equipe || [],
                 loading: false 
             });
-            
+
             return response;
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message;
+
             set({ 
                 error: errorMessage, 
                 loading: false 
             });
+
             throw error;
         }
     },
@@ -37,20 +38,21 @@ const useEquipeStore = create((set, get) => ({
         
         try {
             await EquipeService.SupprimerEquipe(id);
-            
-            // Mettre à jour la liste localement
+
             set(state => ({
                 equipes: state.equipes.filter(equipe => equipe.id !== id),
                 loading: false,
                 success: true
             }));
-            
+
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message;
+
             set({ 
                 error: errorMessage, 
                 loading: false 
             });
+
             throw error;
         }
     },

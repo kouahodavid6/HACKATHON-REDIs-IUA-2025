@@ -36,7 +36,7 @@ const supprimerBloc = async (idBloc) => {
     }
 }
 
-export const blocsService = { // CORRECTION: "BlocsService" → "blocsService" (cohérence)
+export const blocsService = {
     creerBloc,
     listerBlocs,
     modifierBloc,
