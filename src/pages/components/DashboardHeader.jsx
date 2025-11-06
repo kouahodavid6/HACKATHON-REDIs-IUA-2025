@@ -1,10 +1,10 @@
-import { 
-    Menu,
-    UserSquareIcon
-} from 'lucide-react';
+import { Menu, UserSquareIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import useAuthAdminStore from '../../stores/auth.store';
 
 const DashboardHeader = ({ title, toggleSidebar }) => {
+    // Récupérer l'utilisateur depuis le store
+    const { user } = useAuthAdminStore();
 
     return (
         <header 
@@ -29,16 +29,6 @@ const DashboardHeader = ({ title, toggleSidebar }) => {
 
             {/* Zone à droite : notifications + profil */}
             <div className="ml-auto flex items-center space-x-4">
-                {/* Bouton cloche de notifications
-                <motion.button 
-                    className="p-2 rounded-full text-[#0f172a] hover:bg-blue-100 transition-all duration-300 relative border border-transparent hover:border-blue-900"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <Bell className="h-6 w-6" />
-                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border border-white"/>
-                </motion.button> */}
-
                 {/* Avatar + infos utilisateur */}
                 <motion.div 
                     whileHover={{ x: 2 }}
@@ -47,7 +37,8 @@ const DashboardHeader = ({ title, toggleSidebar }) => {
                 >
                     <div className="relative">
                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#090f1b] flex items-center justify-center text-white font-semibold shadow-lg">
-                            A
+                            {/* Première lettre de l'email ou 'A' par défaut */}
+                            {user?.email ? user.email.charAt(0).toUpperCase() : 'A'}
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#0f172a] rounded-full flex items-center justify-center border-2 border-white">
                             <UserSquareIcon className="w-2 h-2 text-white" />
@@ -58,7 +49,10 @@ const DashboardHeader = ({ title, toggleSidebar }) => {
                         <p className="text-sm font-bold text-[#090f1b]">Administrateur</p>
                         <div className="flex items-center space-x-1">
                             <div className="w-1.5 h-1.5 bg-blue-700 rounded-full"></div>
-                            <p className="text-xs text-[#0f172a] font-medium">admin@hackathon.gmail</p>
+                            <p className="text-xs text-[#0f172a] font-medium">
+                                {/* Email réel de l'utilisateur ou email par défaut */}
+                                {user?.email || 'admin@hackathon.gmail'}
+                            </p>
                         </div>
                     </div>
                 </motion.div>
