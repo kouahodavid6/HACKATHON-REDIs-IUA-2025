@@ -44,16 +44,7 @@ const ModalDetailEpreuve = ({ isOpen, onClose, epreuve }) => {
         setImageError(false);
     };
 
-    // Formater la durée en heures et minutes
-    const formatDuree = (dureeMinutes) => {
-        if (!dureeMinutes) return "Non spécifiée";
-        const heures = Math.floor(dureeMinutes / 60);
-        const minutes = dureeMinutes % 60;
-        
-        if (heures === 0) return `${minutes} min`;
-        if (minutes === 0) return `${heures} h`;
-        return `${heures}h ${minutes}min`;
-    };
+
 
     // Gérer le overflow du body
     useEffect(() => {
@@ -122,7 +113,7 @@ const ModalDetailEpreuve = ({ isOpen, onClose, epreuve }) => {
                         variants={modalVariants}
                     >
                         {/* Header du modal */}
-                        <div className="flex justify-between items-center p-6 border-b border-blue-100 sticky top-0 bg-white rounded-t-2xl">
+                        <div className="flex justify-between items-center p-6 border-b border-blue-100 sticky top-0 bg-white rounded-t-2xl z-10">
                             <div className="flex items-center gap-3">
                                 <motion.div 
                                     className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg"
@@ -202,18 +193,7 @@ const ModalDetailEpreuve = ({ isOpen, onClose, epreuve }) => {
                             </div>
 
                             {/* Informations principales */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                {/* Durée */}
-                                <div className="bg-blue-50 rounded-lg p-4">
-                                    <div className="flex items-center gap-2 text-blue-700 mb-2">
-                                        <Clock size={18} />
-                                        <span className="font-semibold">Durée</span>
-                                    </div>
-                                    <p className="text-blue-900 font-medium text-lg">
-                                        {formatDuree(epreuve.duree)}
-                                    </p>
-                                </div>
-
+                            <div className="grid grid-cols-1 gap-6 mb-8">
                                 {/* Dates */}
                                 <div className="bg-green-50 rounded-lg p-4">
                                     <div className="flex items-center gap-2 text-green-700 mb-2">
@@ -258,24 +238,24 @@ const ModalDetailEpreuve = ({ isOpen, onClose, epreuve }) => {
                             </div>
 
                             {/* Tags */}
-{epreuve.tags && epreuve.tags.length > 0 && (
-    <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-            Tags
-        </h2>
-        <div className="flex flex-wrap gap-2">
-            {epreuve.tags.map((tag, index) => (
-                <span
-                    key={index}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium"
-                >
-                    <Tag size={14} />
-                    {tag}
-                </span>
-            ))}
-        </div>
-    </div>
-)}
+                            {epreuve.tags && epreuve.tags.length > 0 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                                        Tags
+                                    </h2>
+                                    <div className="flex flex-wrap gap-2">
+                                        {epreuve.tags.map((tag, index) => (
+                                            <span
+                                                key={index}
+                                                className="inline-flex items-center gap-2 px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium"
+                                            >
+                                                <Tag size={14} />
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Actions */}
                             <div className="border-t border-gray-200 pt-8">
