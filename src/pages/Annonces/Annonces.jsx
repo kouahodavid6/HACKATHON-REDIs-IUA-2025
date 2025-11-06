@@ -4,14 +4,14 @@ import {
     Edit, 
     Trash2, 
     Megaphone,
-    Calendar,
     AlertCircle,
     Loader2,
     Grid3X3,
     List,
     Search,
     X,
-    FileText
+    MoreVertical,
+    Eye
 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -20,17 +20,21 @@ import HeaderSection from "../components/HeaderSection";
 import useAnnoncesStore from "../../stores/annonces.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import AnnoncesModal from "./components/AnnoncesModal";
+import ModalDetailAnnonce from "./components/ModalDetailAnnonce";
 import toast from "react-hot-toast";
 
 const Annonces = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [annonceToDelete, setAnnonceToDelete] = useState(null);
+    const [selectedAnnonce, setSelectedAnnonce] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
+    const [dropdownOpen, setDropdownOpen] = useState(null);
 
     const { 
         annonces, 
@@ -48,7 +52,6 @@ const Annonces = () => {
         try {
             await listerAnnonces();
         } catch (error) {
-            console.error("Erreur lors du chargement des annonces:", error);
             toast.error("Erreur lors du chargement des annonces");
         }
     }, [listerAnnonces]);
@@ -69,12 +72,26 @@ const Annonces = () => {
         setCurrentAnnonce(annonce);
         setIsEditMode(true);
         setIsModalOpen(true);
+        setDropdownOpen(null);
     };
 
     // Gestion de la suppression
     const handleDeleteClick = (annonce) => {
         setAnnonceToDelete(annonce);
         setDeleteModalOpen(true);
+        setDropdownOpen(null);
+    };
+
+   //Gestion de la vue détaillée
+    const handleViewDetails = (annonce) => {
+        setSelectedAnnonce(annonce);
+        setDetailModalOpen(true);
+        setDropdownOpen(null);
+    };
+
+   //Toggle dropdown
+    const toggleDropdown = (annonceId) => {
+        setDropdownOpen(dropdownOpen === annonceId ? null : annonceId);
     };
 
     const handleConfirmDelete = async () => {
@@ -88,7 +105,6 @@ const Annonces = () => {
             toast.success("Annonce supprimée avec succès");
             await chargerAnnonces();
         } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
             toast.error("Erreur lors de la suppression de l'annonce");
         } finally {
             setIsDeleting(false);
@@ -134,12 +150,6 @@ const Annonces = () => {
         });
     };
 
-    // Tronquer la description pour l'affichage
-    const truncateDescription = (description, length = 100) => {
-        if (!description) return 'Aucune description';
-        return description.length > length ? description.substring(0, length) + '...' : description;
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-pink-50/20 flex flex-col md:flex-row">
             {/* Sidebar */}
@@ -164,9 +174,6 @@ const Annonces = () => {
                         <HeaderSection
                             title="Annonces"
                             subtitle="Publiez et gérez les annonces importantes"
-                            buttonLabel="Nouvelle Annonce"
-                            icon={Plus}
-                            onButtonClick={handleAdd}
                         />
 
                         <div className="flex items-center gap-3">
@@ -176,7 +183,7 @@ const Annonces = () => {
                                     onClick={() => setViewMode('grid')}
                                     className={`p-2 rounded-md transition-all ${
                                         viewMode === 'grid' 
-                                            ? 'bg-red-500 text-white shadow-sm' 
+                                            ? 'bg-orange-500 text-white shadow-sm' 
                                             : 'text-slate-600 hover:text-slate-800'
                                     }`}
                                 >
@@ -186,13 +193,21 @@ const Annonces = () => {
                                     onClick={() => setViewMode('list')}
                                     className={`p-2 rounded-md transition-all ${
                                         viewMode === 'list' 
-                                            ? 'bg-red-500 text-white shadow-sm' 
+                                            ? 'bg-orange-500 text-white shadow-sm' 
                                             : 'text-slate-600 hover:text-slate-800'
                                     }`}
                                 >
                                     <List size={18} />
                                 </button>
                             </div>
+
+                            <button
+                                onClick={handleAdd}
+                                className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl hover:from-orange-700 hover:to-amber-700 transition-all duration-200 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 font-medium"
+                            >
+                                <Plus size={20} />
+                                <span>Nouvelle Annonce</span>
+                            </button>
                         </div>
                     </div>
 
@@ -289,11 +304,6 @@ const Annonces = () => {
                                             ({filteredAnnonces.length} résultat(s))
                                         </span>
                                     )}
-                                    {!searchTerm && (
-                                        <span className="text-sm font-normal text-slate-500 ml-2">
-                                            ({annonces.length} total)
-                                        </span>
-                                    )}
                                 </h2>
 
                                 {/* Indicateur de recherche sur mobile */}
@@ -341,37 +351,36 @@ const Annonces = () => {
                                                         <Megaphone className="text-white" size={viewMode === 'list' ? 20 : 24} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className={`font-semibold text-slate-900 group-hover:text-red-600 transition-colors ${
-                                                            viewMode === 'list' ? 'text-lg' : 'text-xl mb-2'
-                                                        }`}>
-                                                            {annonce.libelle_annonce}
-                                                        </h3>
-                                                        
-                                                        {viewMode === 'grid' && (
-                                                            <div className="text-sm text-slate-600 space-y-2 mt-2">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Calendar size={14} className="text-slate-400 flex-shrink-0" />
-                                                                    <span>{formatDate(annonce.date_annonce)}</span>
-                                                                </div>
-                                                                <p className="text-slate-500 line-clamp-3">
-                                                                    {truncateDescription(annonce.description)}
-                                                                </p>
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h3 className={`font-semibold text-slate-900 group-hover:text-red-600 transition-colors ${
+                                                                viewMode === 'list' ? 'text-lg' : 'text-xl'
+                                                            }`}>
+                                                                {annonce.libelle_annonce}
+                                                            </h3>
+                                                            {/* NOUVEAU: Dropdown pour voir les détails */}
+                                                            <div className="relative">
+                                                                <button
+                                                                    onClick={() => toggleDropdown(annonce.id)}
+                                                                    className="p-1 rounded-lg hover:bg-slate-100 transition-colors"
+                                                                >
+                                                                    <MoreVertical size={18} />
+                                                                </button>
+                                                                
+                                                                {dropdownOpen === annonce.id && (
+                                                                    <div className="absolute right-0 top-8 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[140px]">
+                                                                        <button
+                                                                            onClick={() => handleViewDetails(annonce)}
+                                                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                                                        >
+                                                                            <Eye size={16} />
+                                                                            Voir détail
+                                                                        </button>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                {viewMode === 'list' && (
-                                                    <div className="text-sm text-slate-600 space-y-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <Calendar size={14} className="text-slate-400" />
-                                                            <span>{formatDate(annonce.date_annonce)}</span>
-                                                        </div>
-                                                        <div className="max-w-xs truncate">
-                                                            {truncateDescription(annonce.description, 50)}
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
 
                                             {/* Actions */}
@@ -453,6 +462,13 @@ const Annonces = () => {
                 onSuccess={handleSuccess}
                 annonce={currentAnnonce}
                 isEdit={isEditMode}
+            />
+
+            {/* NOUVEAU: Modal pour voir les détails d'une annonce */}
+            <ModalDetailAnnonce
+                isOpen={detailModalOpen}
+                onClose={() => setDetailModalOpen(false)}
+                annonce={selectedAnnonce}
             />
 
             {/* Modal de confirmation de suppression */}
