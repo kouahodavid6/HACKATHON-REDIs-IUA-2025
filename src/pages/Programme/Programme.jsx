@@ -129,7 +129,7 @@ const Programmes = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 flex flex-col md:flex-row">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-pink-50/30 to-pink-50/20 flex flex-col md:flex-row">
             {/* Sidebar */}
             <ResponsiveSidebar
                 isOpen={sidebarOpen}
@@ -152,9 +152,6 @@ const Programmes = () => {
                         <HeaderSection
                             title="Programmes"
                             subtitle="Créez et gérez les programmes du hackathon"
-                            buttonLabel="Nouveau Programme"
-                            icon={Plus}
-                            onButtonClick={handleAdd}
                         />
 
                         <div className="flex items-center gap-3">
@@ -164,7 +161,7 @@ const Programmes = () => {
                                     onClick={() => setViewMode('grid')}
                                     className={`p-2 rounded-md transition-all ${
                                         viewMode === 'grid' 
-                                            ? 'bg-blue-500 text-white shadow-sm' 
+                                            ? 'bg-pink-500 text-white shadow-sm' 
                                             : 'text-slate-600 hover:text-slate-800'
                                     }`}
                                 >
@@ -174,13 +171,21 @@ const Programmes = () => {
                                     onClick={() => setViewMode('list')}
                                     className={`p-2 rounded-md transition-all ${
                                         viewMode === 'list' 
-                                            ? 'bg-blue-500 text-white shadow-sm' 
+                                            ? 'bg-pink-500 text-white shadow-sm' 
                                             : 'text-slate-600 hover:text-slate-800'
                                     }`}
                                 >
                                     <List size={18} />
                                 </button>
                             </div>
+
+                            <button
+                                onClick={handleAdd}
+                                className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-pink-600 to-pink-600 text-white rounded-xl hover:from-pink-700 hover:to-pink-700 transition-all duration-200 shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 font-medium"
+                            >
+                                <Plus size={20} />
+                                <span>Nouveau Programme</span>
+                            </button>
                         </div>
                     </div>
 
@@ -193,8 +198,8 @@ const Programmes = () => {
                                     <div className="text-lg font-bold text-slate-900">{programmes.length}</div>
                                     <div className="text-sm text-slate-600">Programmes total</div>
                                 </div>
-                                <div className="p-3 bg-blue-100 rounded-lg">
-                                    <Calendar className="text-blue-600" size={24} />
+                                <div className="p-3 bg-pink-100 rounded-lg">
+                                    <Calendar className="text-pink-600" size={24} />
                                 </div>
                             </div>
                         </div>
@@ -215,7 +220,7 @@ const Programmes = () => {
                                         placeholder="Rechercher par nom..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-400"
+                                        className="block w-full pl-10 pr-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 bg-white text-slate-900 placeholder-slate-400"
                                     />
                                     {searchTerm && (
                                         <button
@@ -238,7 +243,7 @@ const Programmes = () => {
                     {/* États de chargement et erreurs */}
                     {loading && (
                         <div className="flex flex-col items-center justify-center py-16 bg-white/50 rounded-2xl border border-slate-200">
-                            <Loader2 className="animate-spin text-blue-600 mb-4" size={32} />
+                            <Loader2 className="animate-spin text-pink-600 mb-4" size={32} />
                             <div className="text-lg font-medium text-slate-700">Chargement des programmes...</div>
                             <div className="text-sm text-slate-500 mt-2">Veuillez patienter</div>
                         </div>
@@ -277,16 +282,11 @@ const Programmes = () => {
                                             ({filteredProgrammes.length} résultat(s))
                                         </span>
                                     )}
-                                    {!searchTerm && (
-                                        <span className="text-sm font-normal text-slate-500 ml-2">
-                                            ({programmes.length} total)
-                                        </span>
-                                    )}
                                 </h2>
 
                                 {/* Indicateur de recherche sur mobile */}
                                 {searchTerm && (
-                                    <div className="sm:hidden flex items-center gap-2 text-sm text-slate-600 bg-blue-50 px-3 py-1 rounded-full">
+                                    <div className="sm:hidden flex items-center gap-2 text-sm text-slate-600 bg-pink-50 px-3 py-1 rounded-full">
                                         <Search size={14} />
                                         <span>{filteredProgrammes.length} résultat(s)</span>
                                         <button
@@ -325,11 +325,11 @@ const Programmes = () => {
                                                         ? 'flex-1' 
                                                         : 'w-full'
                                                 }`}>
-                                                    <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg shadow-purple-500/25 flex-shrink-0">
+                                                    <div className="p-3 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl shadow-lg shadow-pink-500/25 flex-shrink-0">
                                                         <Calendar className="text-white" size={viewMode === 'list' ? 20 : 24} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className={`font-semibold text-slate-900 group-hover:text-purple-600 transition-colors ${
+                                                        <h3 className={`font-semibold text-slate-900 group-hover:text-pink-600 transition-colors ${
                                                             viewMode === 'list' ? 'text-lg' : 'text-xl mb-2'
                                                         }`}>
                                                             {programme.titre}
@@ -348,7 +348,7 @@ const Programmes = () => {
                                                 {/* Bouton Gérer les sous-programmes */}
                                                 <button
                                                     onClick={() => handleGérerSousProgrammes(programme)}
-                                                    className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 font-medium flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap"
+                                                    className="px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 font-medium flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap"
                                                     title="Gérer les sous-programmes"
                                                 >
                                                     <Folder size={14} className="sm:size-4" />
@@ -388,7 +388,7 @@ const Programmes = () => {
                                             </p>
                                             <button
                                                 onClick={clearSearch}
-                                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
+                                                className="px-6 py-3 bg-gradient-to-r from-pink-600 to-pink-700 text-white rounded-xl hover:from-pink-700 hover:to-pink-800 transition-all duration-200 shadow-lg shadow-pink-500/25 font-medium inline-flex items-center gap-2"
                                             >
                                                 <X size={20} />
                                                 Effacer la recherche
@@ -407,7 +407,7 @@ const Programmes = () => {
                                             </p>
                                             <button
                                                 onClick={handleAdd}
-                                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/25 font-medium inline-flex items-center gap-2"
+                                                className="px-6 py-3 bg-gradient-to-r from-pink-600 to-pink-700 text-white rounded-xl hover:from-pink-700 hover:to-pink-800 transition-all duration-200 shadow-lg shadow-pink-500/25 font-medium inline-flex items-center gap-2"
                                             >
                                                 <Plus size={20} />
                                                 Créer le premier programme

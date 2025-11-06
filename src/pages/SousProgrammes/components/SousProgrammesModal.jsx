@@ -267,37 +267,6 @@ const SousProgrammesModal = ({
                                         </p>
                                     </div>
 
-                                    {/* Aperçu des données */}
-                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                                        <h4 className="text-sm font-medium text-slate-800 mb-3 flex items-center gap-2">
-                                            <Clock size={16} />
-                                            Aperçu du sous-programme
-                                        </h4>
-                                        <div className="space-y-2 text-sm">
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Libellé:</span>
-                                                <span className="font-medium text-slate-800">
-                                                    {libelleSousProgramme || "Non défini"}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-slate-600">Date:</span>
-                                                <span className="font-medium text-slate-800">
-                                                    {dateSousProgramme ? formatDisplayDate(dateSousProgramme) : "Non définie"}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-slate-600">Description:</span>
-                                                <span className="font-medium text-slate-800 text-right max-w-xs">
-                                                    {description ? 
-                                                        (description.length > 50 ? description.substring(0, 50) + '...' : description) 
-                                                        : "Non définie"
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {/* Affichage des erreurs */}
                                     {error && (
                                         <motion.div 

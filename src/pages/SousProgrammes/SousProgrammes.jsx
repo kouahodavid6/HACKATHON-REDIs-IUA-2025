@@ -13,16 +13,18 @@ import {
     List,
     Search,
     X,
-    FolderTree
+    FolderTree,
+    MoreVertical,
+    Eye
 } from "lucide-react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import ResponsiveSidebar from "../components/ResponsiveSidebar";
-// import HeaderSection from "../components/HeaderSection";
 import useSousProgrammesStore from "../../stores/sousProgrammes.store";
 import useProgrammesStore from "../../stores/programmes.store";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import SousProgrammesModal from "./components/SousProgrammesModal";
+import ModalDetailSousProgramme from "./components/ModalDetailSousProgramme"; // NOUVEAU
 import toast from "react-hot-toast";
 
 const SousProgrammes = () => {
@@ -31,11 +33,14 @@ const SousProgrammes = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [detailModalOpen, setDetailModalOpen] = useState(false); // NOUVEAU
     const [sousProgrammeToDelete, setSousProgrammeToDelete] = useState(null);
+    const [selectedSousProgramme, setSelectedSousProgramme] = useState(null); // NOUVEAU
     const [isDeleting, setIsDeleting] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState('');
+    const [dropdownOpen, setDropdownOpen] = useState(null); // NOUVEAU
 
     const { 
         sousProgrammes, 
@@ -56,7 +61,6 @@ const SousProgrammes = () => {
     // Filtrer les sous-programmes pour ce programme
     const sousProgrammesFiltres = sousProgrammes.filter(sp => 
         sp.id_programme === idProgramme || 
-        // Si l'API ne retourne pas id_programme, on affiche tout (à adapter selon votre API)
         !sp.id_programme
     );
 
@@ -91,12 +95,26 @@ const SousProgrammes = () => {
         setCurrentSousProgramme(sousProgramme);
         setIsEditMode(true);
         setIsModalOpen(true);
+        setDropdownOpen(null);
     };
 
     // Gestion de la suppression
     const handleDeleteClick = (sousProgramme) => {
         setSousProgrammeToDelete(sousProgramme);
         setDeleteModalOpen(true);
+        setDropdownOpen(null);
+    };
+
+    // NOUVEAU: Gestion de la vue détaillée
+    const handleViewDetails = (sousProgramme) => {
+        setSelectedSousProgramme(sousProgramme);
+        setDetailModalOpen(true);
+        setDropdownOpen(null);
+    };
+
+    // NOUVEAU: Toggle dropdown
+    const toggleDropdown = (sousProgrammeId) => {
+        setDropdownOpen(dropdownOpen === sousProgrammeId ? null : sousProgrammeId);
     };
 
     const handleConfirmDelete = async () => {
@@ -156,12 +174,6 @@ const SousProgrammes = () => {
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
-
-    // Tronquer la description pour l'affichage
-    const truncateDescription = (description, length = 100) => {
-        if (!description) return 'Aucune description';
-        return description.length > length ? description.substring(0, length) + '...' : description;
     };
 
     return (
@@ -368,11 +380,6 @@ const SousProgrammes = () => {
                                             ({filteredSousProgrammes.length} résultat(s))
                                         </span>
                                     )}
-                                    {!searchTerm && (
-                                        <span className="text-sm font-normal text-slate-500 ml-2">
-                                            ({sousProgrammesFiltres.length} total)
-                                        </span>
-                                    )}
                                 </h2>
 
                                 {/* Indicateur de recherche sur mobile */}
@@ -420,37 +427,36 @@ const SousProgrammes = () => {
                                                         <Clock className="text-white" size={viewMode === 'list' ? 20 : 24} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className={`font-semibold text-slate-900 group-hover:text-orange-600 transition-colors ${
-                                                            viewMode === 'list' ? 'text-lg' : 'text-xl mb-2'
-                                                        }`}>
-                                                            {sousProgramme.libelle_sous_programme}
-                                                        </h3>
-                                                        
-                                                        {viewMode === 'grid' && (
-                                                            <div className="text-sm text-slate-600 space-y-2 mt-2">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Calendar size={14} className="text-slate-400 flex-shrink-0" />
-                                                                    <span>{formatDate(sousProgramme.date_sous_programme)}</span>
-                                                                </div>
-                                                                <p className="text-slate-500 line-clamp-2">
-                                                                    {truncateDescription(sousProgramme.description)}
-                                                                </p>
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h3 className={`font-semibold text-slate-900 group-hover:text-orange-600 transition-colors ${
+                                                                viewMode === 'list' ? 'text-lg' : 'text-xl'
+                                                            }`}>
+                                                                {sousProgramme.libelle_sous_programme}
+                                                            </h3>
+                                                            {/* NOUVEAU: Dropdown pour voir les détails */}
+                                                            <div className="relative">
+                                                                <button
+                                                                    onClick={() => toggleDropdown(sousProgramme.id)}
+                                                                    className="p-1 rounded-lg hover:bg-slate-100 transition-colors"
+                                                                >
+                                                                    <MoreVertical size={18} />
+                                                                </button>
+                                                                
+                                                                {dropdownOpen === sousProgramme.id && (
+                                                                    <div className="absolute right-0 top-8 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[140px]">
+                                                                        <button
+                                                                            onClick={() => handleViewDetails(sousProgramme)}
+                                                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                                                        >
+                                                                            <Eye size={16} />
+                                                                            Voir détail
+                                                                        </button>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                {viewMode === 'list' && (
-                                                    <div className="text-sm text-slate-600 space-y-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <Calendar size={14} className="text-slate-400" />
-                                                            <span>{formatDate(sousProgramme.date_sous_programme)}</span>
-                                                        </div>
-                                                        <div className="max-w-xs truncate">
-                                                            {truncateDescription(sousProgramme.description, 50)}
-                                                        </div>
-                                                    </div>
-                                                )}
                                             </div>
 
                                             {/* Actions */}
@@ -533,6 +539,13 @@ const SousProgrammes = () => {
                 sousProgramme={currentSousProgramme}
                 isEdit={isEditMode}
                 idProgramme={idProgramme}
+            />
+
+            {/* NOUVEAU: Modal pour voir les détails d'un sous-programme */}
+            <ModalDetailSousProgramme
+                isOpen={detailModalOpen}
+                onClose={() => setDetailModalOpen(false)}
+                sousProgramme={selectedSousProgramme}
             />
 
             {/* Modal de confirmation de suppression */}
