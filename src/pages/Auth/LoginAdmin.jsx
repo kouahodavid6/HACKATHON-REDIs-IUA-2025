@@ -128,8 +128,8 @@ const LoginAdmin = () => {
 
                 <div className="text-center mt-8 pt-6 border-t border-slate-700/30">
                     <p className="text-slate-500 text-xs">
-                        Système d'administration REDIs Hackathon<br />
-                        Département Informatique - IUA
+                        Réaliser par:<br />
+                        <a href="https://davidkouaho-portfolio.vercel.app">David Kouaho</a>
                     </p>
                 </div>
             </div>
