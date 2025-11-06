@@ -128,7 +128,7 @@ const LoginAdmin = () => {
 
                 <div className="text-center mt-8 pt-6 border-t border-slate-700/30">
                     <p className="text-slate-500 text-xs">
-                        Réaliser par:<br />
+                        Réalisé par:<br />
                         <a href="https://davidkouaho-portfolio.vercel.app">David Kouaho</a>
                     </p>
                 </div>
