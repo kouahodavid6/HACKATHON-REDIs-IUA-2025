@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Plus, Minus, Upload } from "lucide-react";
+import { X, Edit, Plus, Minus, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import useEpreuveStore from "../../../stores/epreuves.store";
 import useDomaineStore from "../../../stores/domaines.store"
@@ -10,14 +10,15 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         titre: "",
         description_epreuve: "",
         tags: [],
-        duree: "",
         date_start: "",
         date_end: "",
         id_domaine: "",
-        url_image: null
+        url_image: null,
+        existingImageUrl: null // NOUVEAU: pour stocker l'URL de l'image existante
     });
     const [tagInput, setTagInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null); // NOUVEAU: pour l'aperçu de l'image
     
     const { ajouterEpreuve, modifierEpreuve } = useEpreuveStore();
     const { domaines, listerDomaines } = useDomaineStore();
@@ -32,12 +33,11 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         };
     }, [isOpen]);
 
-    // Charger les domaines au montage avec debug
+    // Charger les domaines au montage
     useEffect(() => {
         const chargerDomaines = async () => {
             try {
                 await listerDomaines();
-                console.log("DOMAINES CHARGÉS DANS MODAL:", domaines);
             } catch (error) {
                 console.error("Erreur lors du chargement des domaines:", error);
             }
@@ -62,33 +62,66 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         }
     }, []);
 
-    // Initialiser le formulaire
+    // CORRECTION: Fonction pour obtenir l'ID du domaine basé sur l'UUID
+    const getDomaineIdFromUuid = useCallback((domaineUuid) => {
+        if (!domaineUuid) return "";
+        
+        // Si l'UUID correspond directement à un domaine, on l'utilise
+        const domaine = domaines.find(d => d.id === domaineUuid);
+        if (domaine) {
+            return domaine.id;
+        }
+        
+        // Sinon, on cherche par nom (fallback)
+        const domaineByName = domaines.find(d => 
+            d.titre === domaineUuid || d.domaine_name === domaineUuid
+        );
+        
+        return domaineByName ? domaineByName.id : "";
+    }, [domaines]);
+
+    // CORRECTION: Initialiser le formulaire avec les bonnes valeurs
     useEffect(() => {
         if (epreuve && isOpen) {
+            console.log("Épreuve à modifier:", epreuve);
+            console.log("Domaines disponibles:", domaines);
+            
+            const domaineId = getDomaineIdFromUuid(epreuve.id_domaine || epreuve.domaine_name);
+            console.log("Domaine ID trouvé:", domaineId);
+
             setForm({
                 titre: epreuve.titre || "",
                 description_epreuve: epreuve.description_epreuve || epreuve.description || "",
-                tags: epreuve.tags || [],
-                duree: epreuve.duree?.toString() || "",
+                tags: Array.isArray(epreuve.tags) ? epreuve.tags : [],
                 date_start: formatDateForInput(epreuve.date_start),
                 date_end: formatDateForInput(epreuve.date_end),
-                id_domaine: epreuve.id_domaine || "",
-                url_image: null
+                id_domaine: domaineId,
+                url_image: null,
+                existingImageUrl: epreuve.url_image || epreuve.image_url || null
             });
+
+            // CORRECTION: Prévisualiser l'image existante
+            if (epreuve.url_image || epreuve.image_url) {
+                setImagePreview(epreuve.url_image || epreuve.image_url);
+            } else {
+                setImagePreview(null);
+            }
+
         } else {
             setForm({
                 titre: "",
                 description_epreuve: "",
                 tags: [],
-                duree: "",
                 date_start: "",
                 date_end: "",
                 id_domaine: "",
-                url_image: null
+                url_image: null,
+                existingImageUrl: null
             });
+            setImagePreview(null);
         }
         setTagInput("");
-    }, [epreuve, isOpen, formatDateForInput]);
+    }, [epreuve, isOpen, formatDateForInput, domaines, getDomaineIdFromUuid]);
 
     // Gestion des tags
     const handleAddTag = () => {
@@ -115,7 +148,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         }
     };
 
-    // Gestion de l'image
+    // CORRECTION: Gestion améliorée de l'image
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -130,7 +163,26 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                 return;
             }
             
+            // Créer un aperçu de l'image
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+            
             setForm(prev => ({ ...prev, url_image: file }));
+        }
+    };
+
+    // CORRECTION: Fonction pour supprimer l'image sélectionnée
+    const handleRemoveImage = () => {
+        setForm(prev => ({ ...prev, url_image: null }));
+        setImagePreview(null);
+        
+        // Réinitialiser l'input file
+        const fileInput = document.getElementById('image-upload');
+        if (fileInput) {
+            fileInput.value = '';
         }
     };
 
@@ -149,11 +201,6 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         
         if (!form.description_epreuve?.trim()) {
             toast.error("La description est obligatoire");
-            return false;
-        }
-        
-        if (!form.duree || parseInt(form.duree) <= 0) {
-            toast.error("La durée doit être un nombre positif");
             return false;
         }
         
@@ -179,28 +226,32 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             return false;
         }
 
+        // CORRECTION: L'image n'est obligatoire que pour la création
+        if (!isEdit && !form.url_image) {
+            toast.error("L'image est obligatoire pour créer une épreuve");
+            return false;
+        }
+
         return true;
     };
 
-    // CORRECTION CRITIQUE: Fonction dynamique pour mapper les IDs de domaine
+    // CORRECTION: Fonction simplifiée pour mapper les domaines
     const getDomaineIntegerId = (domaineUuid) => {
         if (!domaineUuid) return null;
 
-        // Solution 1: Chercher par UUID et utiliser l'index + 1
+        // Trouver l'index du domaine dans la liste
         const domaineIndex = domaines.findIndex(d => d.id === domaineUuid);
         
         if (domaineIndex === -1) {
-            toast.error("Domaine sélectionné non valide");
-            return null;
+            console.warn("Domaine non trouvé, utilisation de l'UUID comme fallback:", domaineUuid);
+            // Fallback: essayer de parser l'UUID comme entier si possible
+            return parseInt(domaineUuid) || 1;
         }
 
-        // Utiliser l'index + 1 comme ID (car les IDs commencent à 1)
-        const integerId = domaineIndex + 1;
-
-        return integerId;
+        return domaineIndex + 1;
     };
 
-    // Soumission du formulaire - CORRECTIONS FINALES
+    // Soumission du formulaire - CORRECTIONS APPLIQUÉES
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -213,18 +264,14 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
             const formData = new FormData();
             
             formData.append('titre', form.titre.trim());
-            
-            // CORRECTION: Utiliser "descritpion_epreuve" (avec la faute de frappe que l'API attend)
             formData.append('descritpion_epreuve', form.description_epreuve.trim());
-            
-            // formData.append('duree', parseInt(form.duree));
             formData.append('date_start', formatDateForAPI(form.date_start));
             formData.append('date_end', formatDateForAPI(form.date_end));
             
-            // CORRECTION CRITIQUE: Convertir l'ID string en entier via mapping dynamique
+            // CORRECTION: Mapping correct du domaine
             const domaineIntegerId = getDomaineIntegerId(form.id_domaine);
             if (!domaineIntegerId) {
-                toast.error("ID de domaine invalide - veuillez ressélectionner le domaine");
+                toast.error("ID de domaine invalide");
                 setLoading(false);
                 return;
             }
@@ -235,15 +282,16 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                 formData.append('tags[]', tag.trim());
             });
             
-            // L'image est obligatoire selon l'API
+            // CORRECTION: Gestion améliorée de l'image
             if (form.url_image) {
                 formData.append('url_image', form.url_image);
             } else if (!isEdit) {
-                // Pour la création, l'image est obligatoire
                 toast.error("L'image est obligatoire pour créer une épreuve");
                 setLoading(false);
                 return;
             }
+            // Pour la modification, si aucune nouvelle image n'est sélectionnée, 
+            // l'image existante est conservée automatiquement
 
             let result;
             if (isEdit && epreuve?.id) {
@@ -281,20 +329,21 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
         }
     };
 
-    // Réinitialiser le formulaire
+    // CORRECTION: Réinitialisation améliorée
     const handleClose = () => {
         if (!loading) {
             setForm({
                 titre: "",
                 description_epreuve: "",
                 tags: [],
-                duree: "",
                 date_start: "",
                 date_end: "",
                 id_domaine: "",
-                url_image: null
+                url_image: null,
+                existingImageUrl: null
             });
             setTagInput("");
+            setImagePreview(null);
             onClose();
         }
     };
@@ -334,7 +383,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                         className="relative z-[10000] bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-blue-100/20 max-h-[90vh] overflow-y-auto"
                         variants={modalVariants}
                     >
-                        <div className="flex justify-between items-center p-6 border-b border-blue-100 sticky top-0 bg-white rounded-t-2xl">
+                        <div className="flex justify-between items-center p-6 border-b border-blue-100 sticky top-0 bg-white rounded-t-2xl z-10">
                             <div className="flex items-center gap-3">
                                 <motion.div 
                                     className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg"
@@ -342,7 +391,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                     animate={{ scale: 1, rotate: 0 }}
                                     transition={{ duration: 0.3, delay: 0.1 }}
                                 >
-                                    <Plus className="h-5 w-5 text-white" />
+                                    <Edit className="h-5 w-5 text-white" />
                                 </motion.div>
                                 <div>
                                     <h3 className="text-xl font-bold text-blue-900">
@@ -446,10 +495,35 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                     </div>
                                 </div>
 
+                                {/* CORRECTION: Section image améliorée */}
                                 <div>
                                     <label className="block text-sm font-medium text-blue-700 mb-2">
-                                        Image de l'épreuve <span className="text-red-500">*</span>
+                                        Image de l'épreuve 
+                                        {!isEdit && <span className="text-red-500">*</span>}
+                                        {isEdit && <span className="text-gray-500 text-xs ml-2">(Optionnel - laisser vide pour conserver l'actuelle)</span>}
                                     </label>
+                                    
+                                    {/* Aperçu de l'image */}
+                                    {(imagePreview || form.existingImageUrl) && (
+                                        <div className="mb-4">
+                                            <p className="text-sm text-gray-600 mb-2">Aperçu :</p>
+                                            <div className="relative inline-block">
+                                                <img 
+                                                    src={imagePreview || form.existingImageUrl} 
+                                                    alt="Aperçu" 
+                                                    className="h-32 w-auto rounded-lg border border-gray-200"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemoveImage}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="border-2 border-dashed border-blue-200 rounded-lg p-4 text-center">
                                         <input
                                             type="file"
@@ -466,31 +540,17 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                         >
                                             <Upload className="text-blue-400" size={24} />
                                             <span className="text-sm text-blue-600">
-                                                {form.url_image ? form.url_image.name : "Cliquez pour uploader une image"}
+                                                {form.url_image ? form.url_image.name : 
+                                                    isEdit ? "Changer l'image" : "Cliquez pour uploader une image"}
                                             </span>
                                             <span className="text-xs text-gray-500">
-                                                PNG, JPG, JPEG (max 2MB) {isEdit && "(optionnel pour la modification)"}
+                                                PNG, JPG, JPEG (max 2MB)
                                             </span>
                                         </label>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* <div>
-                                        <label className="block text-sm font-medium text-blue-700 mb-2">
-                                            Durée (minutes) <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={form.duree}
-                                            onChange={(e) => setForm(prev => ({ ...prev, duree: e.target.value }))}
-                                            placeholder="120"
-                                            min="1"
-                                            className="w-full px-3 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            required
-                                            disabled={loading}
-                                        />
-                                    </div> */}
+                                <div className="grid grid-cols-1 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-blue-700 mb-2">
                                             Domaine <span className="text-red-500">*</span>
@@ -503,9 +563,9 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                             disabled={loading}
                                         >
                                             <option value="">Sélectionnez un domaine</option>
-                                            {domaines.map((domaine, index) => (
+                                            {domaines.map((domaine) => (
                                                 <option key={domaine.id} value={domaine.id}>
-                                                    {domaine.titre} (ID: {index + 1})
+                                                    {domaine.titre}
                                                 </option>
                                             ))}
                                         </select>
@@ -585,7 +645,7 @@ const ModalEpreuve = ({ isOpen, onClose, onSuccess, epreuve, isEdit = false }) =
                                             animate={{ opacity: 1 }}
                                             className="flex items-center gap-2"
                                         >
-                                            <Plus className="h-4 w-4" />
+                                            <Edit className="h-4 w-4" />
                                             {isEdit ? "Modifier" : "Créer"}
                                         </motion.span>
                                     )}
