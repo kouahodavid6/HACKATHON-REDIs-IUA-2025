@@ -11,7 +11,6 @@ import Etudiants from "./pages/Etudiants/Etudiants";
 import Equipes from "./pages/Equipes/Equipes";
 import Domaines from "./pages/Domaines/Domaines";
 import Epreuves from "./pages/Epreuves/Epreuves";
-import ModalDetailEpreuve from "./pages/Epreuves/components/ModalDetailEpreuve"; // ← NOUVEAU COMPOSANT
 import Tabs from "./pages/Tabs/Tabs";
 import Blocs from "./pages/Blocs/Blocs";
 import Questions from "./pages/Questions/Questions";
@@ -144,16 +143,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Epreuves />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* NOUVELLE ROUTE POUR LE DÉTAIL D'ÉPREUVE */}
-            <Route
-              path="/epreuves/:idEpreuve"
-              element={
-                <ProtectedRoute>
-                  <ModalDetailEpreuve />
                 </ProtectedRoute>
               }
             />
