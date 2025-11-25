@@ -17,7 +17,7 @@ const Equipes = () => {
     const [equipeToDelete, setEquipeToDelete] = useState(null);
     const [equipeSelectionnee, setEquipeSelectionnee] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [searchTerm, setSearchTerm] = useState(''); // ✅ État pour la recherche
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { 
         equipes, 
@@ -43,7 +43,7 @@ const Equipes = () => {
                     listerEtudiants()
                 ]);
             } catch (error) {
-
+                // Gestion d'erreur silencieuse ou logging
             }
         };
 
@@ -65,6 +65,30 @@ const Equipes = () => {
         equipe.team_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         equipe.domaine.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // ✅ Calculer les statistiques par domaine
+    const getStatistiquesParDomaine = () => {
+        const domainesStats = {};
+        
+        equipes.forEach(equipe => {
+            const domaine = equipe.domaine || 'Non spécifié';
+            if (!domainesStats[domaine]) {
+                domainesStats[domaine] = 0;
+            }
+            domainesStats[domaine]++;
+        });
+
+        return Object.entries(domainesStats)
+            .map(([domaine, count]) => ({
+                domaine,
+                count
+            }))
+            .sort((a, b) => b.count - a.count); // Trier par nombre décroissant
+    };
+
+    const statistiquesDomaine = getStatistiquesParDomaine();
+    const nombreEquipes = getNombreEquipes();
+    const loadingTotal = loading || loadingEtudiants;
 
     // ✅ Gestion de l'affichage des membres
     const handleViewMembers = (equipe) => {
@@ -104,9 +128,6 @@ const Equipes = () => {
         setEquipeToDelete(null);
         setIsDeleting(false);
     };
-
-    const nombreEquipes = getNombreEquipes();
-    const loadingTotal = loading || loadingEtudiants;
 
     // ✅ Membres de l'équipe sélectionnée
     const membresEquipe = equipeSelectionnee ? getMembresEquipe(equipeSelectionnee.id) : [];
@@ -152,10 +173,53 @@ const Equipes = () => {
                         </div>
                     </div>
 
-                    {/* Statistiques */}
-                    <div className="max-w-72 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                        <div className="text-2xl font-bold text-gray-900">{nombreEquipes}</div>
-                        <div className="text-sm text-gray-600">Total équipes</div>
+                    {/* ✅ Section des statistiques */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-900">
+                            Statistiques des équipes
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {/* Carte Total équipes */}
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="text-2xl font-bold text-gray-900">{nombreEquipes}</div>
+                                        <div className="text-sm text-gray-600">Total équipes</div>
+                                    </div>
+                                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <Users className="text-blue-600" size={24} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Cartes pour les 6 premiers domaines */}
+                            {statistiquesDomaine.slice(0, 6).map((stat, index) => {
+                                const colors = [
+                                    { bg: 'bg-green-100', icon: 'text-green-600' },
+                                    { bg: 'bg-purple-100', icon: 'text-purple-600' },
+                                    { bg: 'bg-orange-100', icon: 'text-orange-600' },
+                                    { bg: 'bg-red-100', icon: 'text-red-600' },
+                                    { bg: 'bg-indigo-100', icon: 'text-indigo-600' },
+                                    { bg: 'bg-teal-100', icon: 'text-teal-600' }
+                                ];
+                                const color = colors[index] || colors[0];
+
+                                return (
+                                    <div key={stat.domaine} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="text-2xl font-bold text-gray-900">{stat.count}</div>
+                                                <div className="text-sm text-gray-600">{stat.domaine}</div>
+                                            </div>
+                                            <div className={`w-12 h-12 ${color.bg} rounded-lg flex items-center justify-center`}>
+                                                <Users className={color.icon} size={24} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     {/* Message d'erreur */}
